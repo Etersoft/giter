@@ -1,0 +1,69 @@
+#!/bin/sh
+#
+# Copyright (C) 2012-2014  Etersoft
+# Copyright (C) 2012-2014  Vitaly Lipatov <lav@etersoft.ru>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+
+PROGDIR=$(dirname $0)
+[ "$PROGDIR" = "." ] && PROGDIR=$(pwd)
+
+. $PROGDIR/giter-sh-functions
+
+load_mod rpm git girar
+
+
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+	echo "gremote - git remote -v analogue"
+	echo "Use: gremote"
+	echo "Options:"
+	echo "  -u USER  add path to USER package repo"
+	echo "  -o       add path to the origin repo (/srpms or /gears)"
+	exit 1
+fi
+
+if is_girar_name $1 ; then
+	GIRARHOST=$1
+	shift
+fi
+
+if [ "$1" = "-u" ] ; then
+	shift
+	RU="$1"
+	[ -n "$RU" ] || fatal "User missed. Please, run as gremote -u USER"
+	SPEC=$(get_gear_spec)
+	build_rpms_name "$SPEC"
+	# copied from rpmbs
+	# FIXME: hack: get project name from package name
+	PROJECTNAME=$(echo $BASENAME | filter_gear_name)
+	[ -n "$PROJECTNAME" ] || fatal "Can't detect current project name"
+	docmd git remote add $RU $GIRARHOST:/people/$RU/packages/$PROJECTNAME.git
+	exit
+fi
+
+if [ "$1" = "-o" ] ; then
+	# http://git.altlinux.org/gears/N/NAME.git
+	PKGNAME=$(get_gear_name)
+	RREPO=$(get_girar_repo $PKGNAME) || fatal "Can't detect origin repo for $PKGNAME"
+	# TODO: add http access support when have no ssh access
+	docmd git remote add gear $GIRARHOST:$RREPO
+	exit
+fi
+
+test -r "$1" && fatal "Do not need any params more"
+
+showcmd git remote -v
+git remote -v | sed -e "s|(fetch)$||" | sed -e "s|(push)$||" | sort -u
+

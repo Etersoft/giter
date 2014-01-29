@@ -1,0 +1,42 @@
+#!/bin/sh
+#
+# Copyright (C) 2013-2014  Etersoft
+# Copyright (C) 2013-2014  Vitaly Lipatov <lav@etersoft.ru>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+
+PROGDIR=$(dirname $0)
+[ "$PROGDIR" = "." ] && PROGDIR=$(pwd)
+
+. $PROGDIR/giter-sh-functions
+
+
+# Do gear-commit -a
+
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+	echo "gammit - do fast git commit amend (apply all current changes to the last commit)"
+	echo "Use: gammit [-e] [file]"
+	echo "     -e - edit commit message"
+	exit 0
+fi
+
+ARG=
+
+# If no args, commit all changed files
+if [ -z "$1" ] ; then
+	ARG="$ARG -a"
+fi
+
+docmd gear-commit $ARG $@
