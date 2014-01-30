@@ -19,9 +19,6 @@
 
 # copied from eepm project
 
-# exit on first error
-set -e
-
 # copied from /etc/init.d/outformat (ALT Linux)
 isatty()
 {

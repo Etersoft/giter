@@ -1,0 +1,131 @@
+#!/bin/bash
+#
+# Copyright (C) 2008-2014  Etersoft
+# Copyright (C) 2008-2014  Vitaly Lipatov <lav@etersoft.ru>
+# Copyright (C) 2008        Denis Smirnov <mithraen@altlinux.ru>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+
+# copied from etersoft-build-utils/share/eterbuild/functions/git
+
+get_branch_list()
+{
+	git branch | grep '^ ' | sed 's/^..\(.*\)/\1/'
+}
+
+get_remote_repo_list()
+{
+	git remote "$@" 2>/dev/null | sort -u
+}
+
+is_exist_branch()
+{
+	test -n "$1" || return 1
+	get_branch_list | grep -q $1
+}
+
+is_exist_remote_repo()
+{
+	test -n "$1" || return 1
+	get_remote_repo_list | grep -q $1
+}
+
+get_current_branch()
+{
+	git branch | grep '^\*' | sed 's/^..//' | tr -d "\n"
+}
+
+get_remote_git_list()
+{
+        local i
+        for i in $(get_remote_repo_list) ; do
+                if is_girar_name $i ; then
+                        echo $i
+                fi
+        done
+}
+
+# Check if $1 like git.alt or git.eter, git.something
+is_girar_name()
+{
+	echo "$1" | grep -q "^git\."
+}
+
+is_one_girar_name()
+{
+	local i
+	local RES=""
+	for i in $@ ; do
+		[ -z "$RES" ] || return
+		is_girar_name "$i" || return
+		RES="$i"
+	done
+	[ -n "$RES" ]
+}
+
+# Try autodetect GIRARHOST. Return true, if get it from arg (need for shift args)
+set_girar_host()
+{
+	if is_girar_name "$1" ; then
+		GIRARHOST="$1"
+		return 0
+	fi
+
+	# Try get from remote list, if unique record there
+	REMOTELIST="$(get_remote_git_list)"
+	if is_one_girar_name "$REMOTELIST" ; then
+		# use one target if it one
+		GIRARHOST="$REMOTELIST"
+	fi
+	return 1
+}
+
+_list_git_package()
+{
+	while read path date other; do
+		printf "%60s  " $GIRARHOST:$path
+		[ -n "$date" ] || { echo "[Date is missed]" ; continue ; }
+		date -d@$date
+	done
+}
+
+# TODO: make world better, please
+list_git_package()
+{
+	ssh $GIRARHOST find-package $1 | _list_git_package
+}
+
+git_commit_ignore_nothing()
+{
+        git commit "$@" && return
+        git commit "$@" 2>&1 | grep "nothing to commit" && return 0
+        return 1
+}
+
+get_last_tag()
+{
+        git describe --abbrev=0 --tags 2>/dev/null
+}
+
+# check if tag is last commit tag (put on the last commit). if tag is missed, check with the last tag in repo
+is_last_commit_tag()
+{
+        local TAG=$1
+        test -n "$TAG" || TAG=$(get_last_tag)
+        [ -n "$TAG" ] || return
+        # check if the tag put on the last commit
+        [ "$(git rev-parse HEAD)" = "$(git rev-parse $TAG^0)" ]
+}
+
