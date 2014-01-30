@@ -21,8 +21,8 @@ PROGDIR=$(dirname $0)
 [ "$PROGDIR" = "." ] && PROGDIR=$(pwd)
 
 . $PROGDIR/giter-sh-functions
-
-load_mod git
+. $PROGDIR/giter-git-functions
+. $PROGDIR/giter-common-functions
 
 test -r "$1" && fatal "Do not need any files in params"
 
@@ -33,7 +33,8 @@ NEWGIRAR=
 
 #############################
 Usage="Usage: $name [GIRAR/remote alias] [-f|--force] [-a|--all] [-t|--tags] [tag]"
-function mygetopts()
+
+mygetopts()
 {
 name=${0##*/}
 Descr="$name - publish current project repo remote git repo"

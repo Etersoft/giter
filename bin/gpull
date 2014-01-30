@@ -21,8 +21,7 @@ PROGDIR=$(dirname $0)
 [ "$PROGDIR" = "." ] && PROGDIR=$(pwd)
 
 . $PROGDIR/giter-sh-functions
-
-load_mod git
+. $PROGDIR/giter-git-functions
 
 if [ "$1" = "-h" ] || [ "$1" = "--help" ] ; then
 	echo "gpull - do git pull with fast forward only by default."
