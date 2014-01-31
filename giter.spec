@@ -15,6 +15,8 @@ Source: ftp://updates.etersoft.ru/pub/Etersoft/Sisyphus/sources/tarball/%name-%v
 
 BuildArchitectures: noarch
 
+Conflicts: etersoft-build-utils < 2.1
+
 %description
 This package contains a set of helper utils for git and gitum.
 See info in Russian on %url.
@@ -37,5 +39,5 @@ RECOMMENDED packages: git-core gitum
 %_bindir/*
 
 %changelog
-* Thu Jan 30 2014 Vitaly Lipatov <lav@altlinux.ru> 0.1-alt1
+* Fri Jan 31 2014 Vitaly Lipatov <lav@altlinux.ru> 0.1-alt1
 - initial build for ALT Linux Sisyphus
