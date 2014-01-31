@@ -20,9 +20,8 @@
 PROGDIR=$(dirname $0)
 [ "$PROGDIR" = "." ] && PROGDIR=$(pwd)
 
-. $PROGDIR/giter-sh-functions
-. $PROGDIR/giter-git-functions
 . $PROGDIR/giter-common-functions
+. $PROGDIR/giter-git-functions
 
 test -r "$1" && fatal "Do not need any files in params"
 
@@ -41,12 +40,12 @@ Descr="$name - publish current project repo remote git repo"
 
 phelp()
 {
-	echog "$Descr"
-	echog "$Usage"
-	echog "Options:"
-	echog " -f - force push"
-	echog " -a - push all branches"
-	echog " -t - push all tags"
+	echo "$Descr"
+	echo "$Usage"
+	echo "Options:"
+	echo " -f - force push"
+	echo " -a - push all branches"
+	echo " -t - push all tags"
 }
 
 while getopts :hfat opt; do
@@ -55,7 +54,7 @@ while getopts :hfat opt; do
     f) PUSHFORCE="--force" ;;
     a) PUSHALL="--all" ;;
     t) TAGSALL="--tags" ;;
-    +?) echog "$name: options should not be preceded by a '+'." 1>&2; exit 2;;
+    +?) echo "$name: options should not be preceded by a '+'." 1>&2; exit 2;;
     ?) OPTIND=$((OPTIND-1)); break;
     esac
 done

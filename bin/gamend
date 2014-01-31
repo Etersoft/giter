@@ -20,7 +20,7 @@
 PROGDIR=$(dirname $0)
 [ "$PROGDIR" = "." ] && PROGDIR=$(pwd)
 
-. $PROGDIR/giter-sh-functions
+. $PROGDIR/giter-common-functions
 
 # Do commit --amend for all files in the repo
 
