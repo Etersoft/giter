@@ -87,15 +87,30 @@ if [ -f ~/.config/giter ] ; then
 	. ~/.config/giter
 fi
 
-if [ -z "$GIRARHOST" ] ; then
-	# set default GIRARHOST from ~/.ssh/config
-	GIRARHOST=$(get_girar_host_from_ssh)
-	[ -n "$GIRARHOST" ] || fatal "Can't get default girar alias (like git.alt) from ~/.ssh/config"
-fi
-
-
 # TODO: merge with sh-functions
 echocon()
 {
 	tty -s && echo "$@"
+}
+
+initial_letter()
+{
+    echo "$1" | head -n1 | cut -c1
+}
+
+# copied from repos
+get_git_url()
+{
+	# HACK
+	test -r /etc/eterbuild/repos/gitalias || fatal "Please install etersoft-build-utils package for use"
+	grep "^$1 " /etc/eterbuild/repos/gitalias | cut -f2 -d" "
+}
+
+assert_var()
+{
+	local i re
+	for i in $@ ; do
+		re=$(eval echo \$$i)
+		[ -n "$re" ] || fatal "assert: $i nonexist"
+	done
 }

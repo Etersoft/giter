@@ -1,0 +1,59 @@
+#!/bin/bash
+#
+# Copyright (C) 2013-2014  Etersoft
+# Copyright (C) 2013-2014  Vitaly Lipatov <lav@etersoft.ru>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+
+# copied from etersoft-build-utils/share/eterbuild/functions/girar
+
+# Is allow connect with ssh to the GIRARHOST server?
+has_ssh_girar_access()
+{
+	ssh $GIRARHOST help >/dev/null 2>&1
+}
+
+check_http_status()
+{
+	a= curl -s -I "$1" | grep HTTP | grep -q "200 OK"
+}
+
+# Returns true if repo with path from first arg is exits on the remote GIRARHOST server
+is_exist_git_repo()
+{
+	if has_ssh_girar_access ; then
+		ssh $GIRARHOST ls $1 >/dev/null 2>&1 && return
+	fi
+	# TODO: this is workaround for ALT bug #22745
+	# https://bugzilla.altlinux.org/show_bug.cgi?id=22745
+	check_http_status $(get_git_url $GIRARHOST)$1
+}
+
+
+# get gear repo for package name
+get_girar_repo()
+{
+	assert_var GIRARHOST
+	local PKGNAME="$1"
+	# http://git.altlinux.org/gears/N/NAME.git
+	local REPOPATH="$(initial_letter $PKGNAME)/$PKGNAME.git"
+	local RREPO="/gears/$REPOPATH"
+	if ! is_exist_git_repo $RREPO ; then
+		RREPO="/srpms/$REPOPATH"
+		is_exist_git_repo $RREPO || return
+	fi
+	echo "$RREPO"
+}
+

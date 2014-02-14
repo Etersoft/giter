@@ -108,6 +108,8 @@ tune_girarlist()
 
 REMOTELIST="$(get_remote_git_list)"
 
+set_girar_host
+
 if [ -z "$NEWGIRAR" ] ; then
 	NEWGIRAR="$1"
 	shift
