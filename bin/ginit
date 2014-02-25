@@ -30,7 +30,7 @@ if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 	exit 0
 fi
 
-set_girar_host $1 || shift
+set_girar_host $1 && shift
 
 test -r "$1" && fatal "Do not need any params more"
 
