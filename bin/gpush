@@ -31,12 +31,12 @@ TAGSALL=
 NEWGIRAR=
 
 #############################
-Usage="Usage: $name [GIRAR/remote alias] [-f|--force] [-a|--all] [-t|--tags] [tag]"
+Usage="Usage: $name [GIRAR/remote alias] [-f|--force] [-a|--all] [-b|--branches] [-t|--tags] [tag]"
 
 mygetopts()
 {
 name=${0##*/}
-Descr="$name - publish current project repo remote git repo"
+Descr="$name - publish to remote git repository"
 
 phelp()
 {
@@ -44,7 +44,8 @@ phelp()
 	echo "$Usage"
 	echo "Options:"
 	echo " -f - force push"
-	echo " -a - push all branches"
+	echo " -a - push to all remotes"
+	echo " -b - push all branches"
 	echo " -t - push all tags"
 }
 
@@ -52,7 +53,8 @@ while getopts :hfat opt; do
     case $opt in
     h) phelp; exit 0;;
     f) PUSHFORCE="--force" ;;
-    a) PUSHALL="--all" ;;
+    a) PUSHTOALL="--toall" ;;
+    b) PUSHALLBRANCHES="--allbranches" ;;
     t) TAGSALL="--tags" ;;
     +?) echo "$name: options should not be preceded by a '+'." 1>&2; exit 2;;
     ?) OPTIND=$((OPTIND-1)); break;
@@ -69,6 +71,7 @@ LISTARGS="$@"
 
 }
 
+# TODO: rewrite NEWGIRAR defining
 # Skip first param
 if ! echo "$1" | grep -q "^-" ; then
     NEWGIRAR="$1"
@@ -84,7 +87,7 @@ push_to_remote()
 	local TEXTTAG=
 	local PROJECTDIR=$(get_root_git_dir)
 
-	[ -n "$TAGSALL$PUSHALL" ] && TEXTTAG="(with all tags)"
+	[ -n "$TAGSALL" ] && TEXTTAG="(with all tags)"
 
 	echo
 	echo "** Push $TEXTBRANCH from $PROJECTDIR to $GHOST $TEXTTAG"
@@ -136,6 +139,10 @@ else
 	LISTGIRARHOST="$GIRARHOST $(do_exclude_list "$GIRARHOST" "$REMOTELIST")"
 fi
 
+if [ -n "$PUSHTOALL" ] ; then
+       LISTGIRARHOST="$(get_remote_repo_list)"
+fi
+
 # if set it can be tag or branch name
 if [ -n "$1" ] ; then
 	CURRENTBRANCH="$1"
@@ -150,7 +157,7 @@ fi
 
 tune_girarlist $LISTARGS
 
-if [ "$PUSHALL" = "--all" ] ; then
+if [ "$PUSHALLBRANCHES" = "--allbranches" ] ; then
 	TEXTBRANCH="all branches"
 	CURRENTBRANCH=
 else
