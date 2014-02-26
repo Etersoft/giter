@@ -1,6 +1,8 @@
+# This spec is backported to ALTLinux p7 automatically by rpmbph script. Do not edit it.
+#
 Name: giter
 Version: 0.3
-Release: alt1
+Release: alt0.M70P.1
 
 Summary: Etersoft wrapper for git commands
 
@@ -39,6 +41,9 @@ RECOMMENDED packages: git-core gitum
 %_bindir/*
 
 %changelog
+* Wed Feb 26 2014 Vitaly Lipatov <lav@altlinux.ru> 0.3-alt0.M70P.1
+- backport to ALTLinux p7 (by rpmbph script)
+
 * Wed Feb 26 2014 Vitaly Lipatov <lav@altlinux.ru> 0.3-alt1
 - gpush: add support for -a (push to all repos)
 - fix girar host detection
