@@ -39,7 +39,11 @@ shift
 
 test -r "$1" && fatal "Do not need any params more"
 
-[ -n "$RPNAME" ] || RPNAME=$(get_gear_name)
+if [ -z "$RPNAME" ] ; then
+	# use gear name
+	GNAME=$(get_gear_name)
+	RPNAME="$GNAME"
+fi
 
 # FIXME: если не нашли, стоит взять название каталога за основу
 [ -n "$RPNAME" ] || fatal "Can't detect project name. Run inside git repo."
@@ -53,6 +57,8 @@ fi
 echo "Create remote $RPNAME repo in $GIRARHOST:"
 docmd ssh $GIRARHOST git-init-db "$RPNAME"
 
-echo
-echo "Create $GIRARHOST remote repo alias:"
-docmd git remote add $GIRARHOST $GIRARHOST:$RPNAME
+if [ -n "$GNAME" ] ; then
+	echo
+	echo "Create $GIRARHOST remote repo alias:"
+	docmd git remote add $GIRARHOST $GIRARHOST:$RPNAME
+fi
