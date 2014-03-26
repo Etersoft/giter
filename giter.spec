@@ -35,7 +35,7 @@ RECOMMENDED packages: git-core gitum
 %find_lang %name
 
 %files -f %name.lang
-%doc AUTHORS
+%doc AUTHORS README.md
 %_bindir/*
 
 %changelog

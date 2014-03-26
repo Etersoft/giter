@@ -19,6 +19,8 @@
 
 . $PROGDIR/giter-sh-functions
 
+check_tty
+
 estrlist()
 {
         $PROGDIR/giter-estrlist "$@"
