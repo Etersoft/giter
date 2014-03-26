@@ -24,24 +24,35 @@ PROGDIR=$(dirname $0)
 . $PROGDIR/giter-git-functions
 
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-	echo "ginit - initialize repo in $GIRARHOST for current project"
-	echo "Use: ginit [GIRAR]"
-	echo "     ginit git.eter - for create repo in the git.eter"
+	echo "ginit - initialize remote repo for the project from the current directory"
+	echo "Use: ginit [GIRAR] [project]"
+	echo "     ginit git.alt - create repo in the git.alt girar server"
+	echo "     ginit rempro  - create repo rempro in the git.eter"
+	echo "     ginit git.eter /projects/rempro  - create repo rempro in the project dir in the git.eter girar server"
 	exit 0
 fi
 
 set_girar_host $1 && shift
 
+RPNAME="$1"
+shift
+
 test -r "$1" && fatal "Do not need any params more"
 
-RPNAME=$(get_gear_name)
+[ -n "$RPNAME" ] || RPNAME=$(get_gear_name)
 
 # FIXME: если не нашли, стоит взять название каталога за основу
 [ -n "$RPNAME" ] || fatal "Can't detect project name. Run inside git repo."
 
 # ALT Linux only
+if echo "$RPNAME" | grep -q -v "/" ; then
+	RPNAME="packages/$RPNAME"
+fi
+
+# ALT Linux only
 echo "Create remote $RPNAME repo in $GIRARHOST:"
-docmd ssh $GIRARHOST git-init-db "$RPNAME.git"
+docmd ssh $GIRARHOST git-init-db "$RPNAME"
+
 echo
 echo "Create $GIRARHOST remote repo alias:"
-docmd git remote add $GIRARHOST $GIRARHOST:packages/$RPNAME.git
+docmd git remote add $GIRARHOST $GIRARHOST:$RPNAME
