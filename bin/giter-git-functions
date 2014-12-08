@@ -51,10 +51,27 @@ get_current_branch()
 get_remote_repo_name()
 {
     local branch remote url basename
-    branch=$(get_current_branch)
-    [ -n "$branch" ] || return
-    remote=$(git config --get branch.$branch.remote)
-    url=$(git config --get remote.$remote.url)
+    url=$(git config --get remote.$GIRARHOST.url)
+
+    if [ -z "$url" ] ; then
+        # any git.*** from git remote has girar like path
+        local anygirar=$(get_remote_git_list | egrep (packages|srpms|gears)/ | head -n1)
+        url=$(git config --get remote.$anygirar.url)
+    fi
+
+    if [ -z "$url" ] ; then
+        # repo dir name
+        url=$(get_gear_name)
+    fi
+
+    if [ -z "$url" ] ; then
+        # remote url for the current branch
+        branch=$(get_current_branch)
+        [ -n "$branch" ] || return
+        remote=$(git config --get branch.$branch.remote)
+        url=$(git config --get remote.$remote.url)
+    fi
+
     [ -n "$url" ] || return
     basename=$(basename "$url" .git)
     echo "$basename"
