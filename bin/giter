@@ -28,25 +28,26 @@ if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 	echo "giter wrapper around git"
 	echo "Use: giter command [args]"
 	echo "     giter list branches"
+	echo "     giter print name"
 	exit 0
 fi
 
 check_command()
 {
 
-    case "$1 $2" in
+    case "$@" in
         "list branches"|"l b")         # HELPCMD: print list of the branches in the repo
-	    get_branch_list
+            get_branch_list
             ;;
         "print name"|"print repo name"|"p n"|"p r")            # HELPCMD: print name of the repo
             get_repo_name
             ;;
-        "print girar"|"print girar name"|"p g")
-            get_girar_repo
-    	    ;;
+        #"print girar"|"print girar name"|"p g")
+        #    get_girar_repo
+        #    ;;
         *)
             return 1
-	    ;;
+        ;;
     esac
 
 }
