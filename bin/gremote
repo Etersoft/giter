@@ -27,7 +27,7 @@ PROGDIR=$(dirname $0)
 
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 	echo "gremote - git remote -v analogue"
-	echo "Use: gremote"
+	echo "Use: gremote [GIRAR]"
 	echo "Options:"
 	echo "  -u USER  add path to USER package repo"
 	echo "  -o       add path to the origin repo (/srpms or /gears)"

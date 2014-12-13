@@ -28,6 +28,7 @@ PROGDIR=$(dirname $0)
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 	echo "grebase - do interactive rebase for last N commits"
 	echo "Use: grebase [N]"
+	echo "   N - number of the commit (will ask if empty)"
 	exit 0
 fi
 
