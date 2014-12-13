@@ -26,25 +26,34 @@ PROGDIR=$(dirname $0)
 
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 	echo "giter wrapper around git"
-	echo "Use: giter command [args]"
+	echo "Use: giter [girar host] command [args]"
 	echo "     giter list branches"
-	echo "     giter print name"
+	echo "     giter print repo"
+	echo "     giter print remote"
 	exit 0
 fi
 
 check_command()
 {
+   local SW="$1"
+   shift
 
-    case "$@" in
+    case "$SW" in
         "list branches"|"l b")         # HELPCMD: print list of the branches in the repo
             get_branch_list
             ;;
-        "print name"|"print repo name"|"p n"|"p r")            # HELPCMD: print name of the repo
+        "print repo"|"print name"|"print repo name"|"p n"|"p r")            # HELPCMD: print name of the repo
             get_repo_name
             ;;
-        #"print girar"|"print girar name"|"p g")
-        #    get_girar_repo
-        #    ;;
+        "list remote")
+            get_remote_git_list
+            ;;
+        "print girarhost"|"print girar host")
+    	    echo "$GIRARHOST"
+    	    ;;
+        "print girar repo")
+            get_girar_repo "$1"
+            ;;
         *)
             return 1
         ;;
@@ -52,4 +61,23 @@ check_command()
 
 }
 
-check_command "$@" || fatal "Do not know command '$@'"
+check_command3()
+{
+    local SW="$1 $2 $3"
+    shift 3
+    check_command "$SW" "$@"
+}
+
+check_command2()
+{
+    local SW="$1 $2"
+    shift 2
+    check_command "$SW" "$@"
+}
+
+set_girar_host $1 && shift
+
+check_command3 "$@" && exit
+check_command2 "$@" && exit
+
+fatal "Do not know command '$@'"
