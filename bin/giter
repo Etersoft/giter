@@ -55,6 +55,9 @@ check_command()
         "print girar repo")
             get_girar_repo "$1"
             ;;
+        "check girar access")
+    	    has_ssh_girar_access
+    	    ;;
         *)
             return 1
         ;;
