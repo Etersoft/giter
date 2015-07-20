@@ -25,8 +25,8 @@ PROGDIR=$(dirname $0)
 # Do cherry pick for all commit from git log in reverse order
 
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-	echo "gmergelog - cherry pick all commits for git log file in reverse order"
-	echo "Use: gmergelog [options] file.log"
+	echo "gpick - cherry pick all commits for git log file in reverse order"
+	echo "Use: gpick [options] file.log"
 	echo "Hit: get git log from with $ git log command"
 	echo "     --skip  skip commit"
 	exit
