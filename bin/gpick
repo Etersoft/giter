@@ -1,0 +1,90 @@
+#!/bin/sh
+#
+# Copyright (C) 2009,2015  Etersoft
+# Copyright (C) 2009-2015  Vitaly Lipatov <lav@etersoft.ru>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+
+PROGDIR=$(dirname $0)
+[ "$PROGDIR" = "." ] && PROGDIR=$(pwd)
+
+. $PROGDIR/giter-common-functions
+
+# Do cherry pick for all commit from git log in reverse order
+
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+	echo "gpick - cherry pick all commits for git log file in reverse order"
+	echo "Use: gpick [options] file.log"
+	echo "Hit: get git log from with $ git log command"
+	echo "     --skip  skip commit"
+	exit
+fi
+
+GITROOT=$(get_root_git_dir)
+[ -d "$GITROOT/.git" ] || fatal "Use me in git repo dir only"
+
+GFILE="$GITROOT/.git/gmergelog"
+
+# here we remove last line
+done_commit()
+{
+        # TODO: do it better!
+        grep -v "$1" "$GFILE" >"$GFILE.tmp"
+        rm -f "$GFILE" || fatal
+        mv "$GFILE.tmp" "$GFILE" || fatal
+}
+
+get_commit()
+{
+        tail -n1 "$GFILE" || fatal
+}
+
+# if are in progress
+if [ -s "$GFILE" ] ; then
+        if [ "$1" = "--skip" ] ; then
+            commit=$(get_commit)
+            docmd git reset
+            echo "Skipping commit $commit"
+            done_commit $commit
+        else
+            [ -n "$1" ] && fatal "We are in cherry pick progress on $(get_commit) commit. Do not use args or check $GFILE file."
+        fi
+else
+        # if first run
+        [ -s "$1" ] || fatal "Run me with git log file (use $ git log)"
+
+        grep "^commit " "$1" | sed -e "s|commit \([0-0a-f]*\)|\1|g" >$GFILE || fatal "Can't get commits from $GFILE"
+        [ -s "$GFILE" ] || fatal "There is no git log entries in $1 file"
+fi
+
+
+
+# has filled file here
+
+# until GFILE is empty
+while [ -s "$GFILE" ] ; do
+        # read last line in commit var
+        commit=$(get_commit)
+
+        echo
+        echo "Cherry picking $(git show --oneline $commit | head -n1)"
+        docmd git cherry-pick $commit && done_commit $commit && continue
+
+        # cherry pick is failed
+        echo
+        echo "Cherry pick for commit $commit failed. Use --skip or fix conflicts in some way and run $0 with out args again."
+        exit 1
+done
+echo "Done."

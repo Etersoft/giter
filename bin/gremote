@@ -27,7 +27,7 @@ PROGDIR=$(dirname $0)
 
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 	echo "gremote - git remote -v analogue"
-	echo "Use: gremote"
+	echo "Use: gremote [GIRAR]"
 	echo "Options:"
 	echo "  -u USER  add path to USER package repo"
 	echo "  -o       add path to the origin repo (/srpms or /gears)"
@@ -52,7 +52,7 @@ fi
 
 if [ "$1" = "-o" ] ; then
 	# http://git.altlinux.org/gears/N/NAME.git
-	PKGNAME=$(get_gear_name)
+	PKGNAME=$(get_repo_name)
 	echo "Get correct repo path for $PKGNAME from $GIRARHOST..."
 	RREPO=$(get_girar_repo $PKGNAME) || fatal "Can't detect origin repo for $PKGNAME"
 	# TODO: add http access support when have no ssh access

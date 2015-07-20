@@ -1,0 +1,87 @@
+#!/bin/sh
+#
+# Copyright (C) 2008-2014  Etersoft
+# Copyright (C) 2008-2014  Vitaly Lipatov <lav@etersoft.ru>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+
+PROGDIR=$(dirname $0)
+[ "$PROGDIR" = "." ] && PROGDIR=$(pwd)
+
+. $PROGDIR/giter-common-functions
+. $PROGDIR/giter-girar-functions
+. $PROGDIR/giter-git-functions
+
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+	echo "giter wrapper around git"
+	echo "Use: giter [GIRAR] command [args]"
+	echo "     giter list branches"
+	echo "     giter print repo"
+	echo "     giter print remote"
+	echo "     gitar print girar repo NAME"
+	exit 0
+fi
+
+check_command()
+{
+   local SW="$1"
+   shift
+
+    case "$SW" in
+        "list branches"|"l b")         # HELPCMD: print list of the branches in the repo
+            get_branch_list
+            ;;
+        "print repo"|"print name"|"print repo name"|"p n"|"p r")            # HELPCMD: print name of the repo
+            get_repo_name
+            ;;
+        "list remote")
+            get_remote_git_list
+            ;;
+        "print girarhost"|"print girar host")
+    	    echo "$GIRARHOST"
+    	    ;;
+        "print girar repo")
+            get_girar_repo "$1"
+            ;;
+        "check girar access")
+    	    has_ssh_girar_access
+    	    ;;
+        *)
+            return 1
+        ;;
+    esac
+
+}
+
+check_command3()
+{
+    local SW="$1 $2 $3"
+    shift 3
+    check_command "$SW" "$@"
+}
+
+check_command2()
+{
+    local SW="$1 $2"
+    shift 2
+    check_command "$SW" "$@"
+}
+
+set_girar_host $1 && shift
+
+check_command3 "$@" && exit
+check_command2 "$@" && exit
+
+fatal "Do not know command '$@'"
