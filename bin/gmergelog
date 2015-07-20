@@ -22,23 +22,69 @@ PROGDIR=$(dirname $0)
 
 . $PROGDIR/giter-common-functions
 
-# Do cherry pick for all commit from git log
+# Do cherry pick for all commit from git log in reverse order
 
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 	echo "gmergelog - cherry pick all commits for git log file in reverse order"
-	echo "Use: gmergelog file.log"
+	echo "Use: gmergelog [options] file.log"
 	echo "Hit: get git log from with $ git log command"
-	#echo "     - no options"
+	echo "     --skip  skip commit"
 	exit
 fi
 
-[ -s "$1" ] || fatal "Run me with git log file (use $ git log)"
+GITROOT=$(get_root_git_dir)
+[ -d "$GITROOT/.git" ] || fatal "Use me in git repo dir only"
 
-# Делает cherry-pick для патчей из указанного лога, в обратном порядке
-COMMITLIST=`grep "^commit " "$1" | tac | sed -e "s|commit \([0-0a-f]*\)|\1|g"`
+GFILE="$GITROOT/.git/gmergelog"
 
-[ -n "$COMMITLIST" ] || fatal "There is no git log entries in $1 file"
+# here we remove last line
+done_commit()
+{
+        # TODO: do it better!
+        grep -v "$1" "$GFILE" >"$GFILE.tmp"
+        rm -f "$GFILE" || fatal
+        mv "$GFILE.tmp" "$GFILE" || fatal
+}
 
-for i in $COMMITLIST ; do
-	git cherry-pick $i || fatal "Cherry pick for commit $i failed. Fix conflicts and run $ git commit FILE(s)"
+get_commit()
+{
+        tail -n1 "$GFILE" || fatal
+}
+
+# if are in progress
+if [ -s "$GFILE" ] ; then
+        if [ "$1" = "--skip" ] ; then
+            commit=$(get_commit)
+            docmd git reset
+            echo "Skipping commit $commit"
+            done_commit $commit
+        else
+            [ -n "$1" ] && fatal "We are in cherry pick progress on $(get_commit) commit. Do not use args or check $GFILE file."
+        fi
+else
+        # if first run
+        [ -s "$1" ] || fatal "Run me with git log file (use $ git log)"
+
+        grep "^commit " "$1" | sed -e "s|commit \([0-0a-f]*\)|\1|g" >$GFILE || fatal "Can't get commits from $GFILE"
+        [ -s "$GFILE" ] || fatal "There is no git log entries in $1 file"
+fi
+
+
+
+# has filled file here
+
+# until GFILE is empty
+while [ -s "$GFILE" ] ; do
+        # read last line in commit var
+        commit=$(get_commit)
+
+        echo
+        echo "Cherry picking $(git show --oneline $commit | head -n1)"
+        docmd git cherry-pick $commit && done_commit $commit && continue
+
+        # cherry pick is failed
+        echo
+        echo "Cherry pick for commit $commit failed. Use --skip or fix conflicts in some way and run $0 with out args again."
+        exit 1
 done
+echo "Done."
