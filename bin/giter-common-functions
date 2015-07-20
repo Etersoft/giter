@@ -103,8 +103,7 @@ initial_letter()
 # copied from repos
 get_git_url()
 {
-	# HACK
-	test -r /etc/eterbuild/repos/gitalias || fatal "Please install etersoft-build-utils package for use"
+	epm assure /etc/eterbuild/repos/gitalias etersoft-build-utils
 	grep "^$1 " /etc/eterbuild/repos/gitalias | cut -f2 -d" "
 }
 
