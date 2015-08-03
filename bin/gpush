@@ -71,9 +71,9 @@ LISTARGS="$@"
 
 }
 
-# TODO: rewrite NEWGIRAR defining
-# Skip first param
-if ! echo "$1" | grep -q "^-" ; then
+NEWGIRAR=
+if set_work_hosts "$1" ; then
+    # We have set host via program arg
     NEWGIRAR="$1"
     shift
 fi
@@ -111,36 +111,22 @@ tune_girarlist()
 
 REMOTELIST="$(get_remote_git_list)"
 
-set_girar_host
-
-if [ -z "$NEWGIRAR" ] ; then
-	NEWGIRAR="$1"
-	shift
-fi
-
 # If run with gear as param
 if [ -n "$NEWGIRAR" ] ; then
-	# if run with girar host in arg
-	if is_girar_name "$NEWGIRAR" ; then
-		# if remote list is empty, do ginit
-		[ -n "$REMOTELIST" ] || ginit $NEWGIRAR
-	fi
-	LISTGIRARHOST="$NEWGIRAR"
+	# if remote list is empty, do ginit
+	[ -n "$REMOTELIST" ] || ginit $GITHOST
+	LISTGITHOST="$GITHOST"
 else
-	# use one target if it one
-	if is_one_girar_name "$REMOTELIST" ; then
-		GIRARHOST="$REMOTELIST"
-	fi
-
+        # TODO: bad way
 	# origin by default if exists and alone
-	if get_remote_repo_list | grep -q origin ; then
-		GIRARHOST="origin"
-	fi
-	LISTGIRARHOST="$GIRARHOST $(do_exclude_list "$GIRARHOST" "$REMOTELIST")"
+	#if get_remote_repo_list | grep -q origin ; then
+	#	GITHOST="origin"
+	#fi
+	LISTGITHOST="$GITHOST $(do_exclude_list "$GITHOST" "$REMOTELIST")"
 fi
 
 if [ -n "$PUSHTOALL" ] ; then
-       LISTGIRARHOST="$(get_remote_repo_list)"
+       LISTGITHOST="$(get_remote_repo_list)"
 fi
 
 # if set it can be tag or branch name
@@ -167,6 +153,6 @@ else
 	fi
 fi
 
-for i in $LISTGIRARHOST ; do
+for i in $LISTGITHOST ; do
 	push_to_remote $i
 done

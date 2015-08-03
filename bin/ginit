@@ -32,12 +32,12 @@ if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 	exit 0
 fi
 
-set_girar_host $1 && shift
+set_work_hosts $1 && shift
 
 RPNAME="$1"
 shift
 
-test -r "$1" && fatal "Do not need any params more"
+test -r "$1" && fatal "Do not need any more params."
 
 if [ -z "$RPNAME" ] ; then
 	GNAME=$(get_repo_name)
@@ -45,19 +45,19 @@ if [ -z "$RPNAME" ] ; then
 fi
 
 # FIXME: если не нашли, стоит взять название каталога за основу
-[ -n "$RPNAME" ] || fatal "Can't detect project name. Run inside git repo."
+[ -n "$RPNAME" ] || fatal "Can't detect project name. Run inside git repo, please."
 
-# ALT Linux only
+# ALT Linux gear only
 if echo "$RPNAME" | grep -q -v "/" ; then
 	RPNAME="packages/$RPNAME"
 fi
 
 # ALT Linux only
-echo "Create remote $RPNAME repo in $GIRARHOST:"
-docmd ssh $GIRARHOST git-init-db "$RPNAME"
+echo "Create remote $RPNAME repo in $GITHOST:"
+docmd ssh $GITHOST git-init-db "$RPNAME"
 
 if [ -n "$GNAME" ] ; then
 	echo
-	echo "Create $GIRARHOST remote repo alias:"
-	docmd git remote add $GIRARHOST $GIRARHOST:$RPNAME
+	echo "Create $GITHOST remote repo alias:"
+	docmd git remote add $GITHOST $GITHOST:$RPNAME
 fi

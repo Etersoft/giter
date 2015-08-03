@@ -34,7 +34,7 @@ if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 	exit 0
 fi
 
-set_girar_host $1 && shift
+set_work_hosts $1 && shift
 
 if [ "$1" = "-u" ] ; then
 	shift
@@ -46,17 +46,17 @@ if [ "$1" = "-u" ] ; then
 	# FIXME: hack: get project name from package name
 	PROJECTNAME=$(echo $BASENAME | filter_gear_name)
 	[ -n "$PROJECTNAME" ] || fatal "Can't detect current project name"
-	docmd git remote add $RU $GIRARHOST:/people/$RU/packages/$PROJECTNAME.git
+	docmd git remote add $RU $GITHOST:/people/$RU/packages/$PROJECTNAME.git
 	exit
 fi
 
 if [ "$1" = "-o" ] ; then
 	# http://git.altlinux.org/gears/N/NAME.git
 	PKGNAME=$(get_repo_name)
-	echo "Get correct repo path for $PKGNAME from $GIRARHOST..."
+	echo "Get correct repo path for $PKGNAME from $GITHOST..."
 	RREPO=$(get_girar_repo $PKGNAME) || fatal "Can't detect origin repo for $PKGNAME"
 	# TODO: add http access support when have no ssh access
-	docmd git remote add gear $GIRARHOST:$RREPO
+	docmd git remote add gear $GITHOST:$RREPO
 	exit
 fi
 

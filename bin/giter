@@ -50,7 +50,13 @@ check_command()
             get_remote_git_list
             ;;
         "print girarhost"|"print girar host")
-    	    echo "$GIRARHOST"
+    	    echo "$GITHOST"
+    	    ;;
+        "print githost"|"print git host")
+    	    echo "$GITHOST"
+    	    ;;
+        "print gearhost"|"print gear host")
+    	    echo "$GEARHOST"
     	    ;;
         "print girar repo")
             get_girar_repo "$1"
@@ -79,7 +85,7 @@ check_command2()
     check_command "$SW" "$@"
 }
 
-set_girar_host $1 && shift
+set_work_hosts $1 && shift
 
 check_command3 "$@" && exit
 check_command2 "$@" && exit
