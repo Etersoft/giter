@@ -49,6 +49,10 @@ check_command()
         "list remote")
             get_remote_git_list
             ;;
+        "list packages")
+            list_git_package "$1"
+            ;;
+        # OBSOLETED: for compatibility
         "print girarhost"|"print girar host")
     	    echo "$GITHOST"
     	    ;;
