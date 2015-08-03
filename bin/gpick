@@ -26,52 +26,121 @@ PROGDIR=$(dirname $0)
 
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 	echo "gpick - cherry pick all commits for git log file in reverse order"
-	echo "Use: gpick [options] file.log"
+	echo "Use: gpick [options] file.log|file1.patch... file2.patch..."
 	echo "Hit: get git log from with $ git log command"
-	echo "     --skip  skip commit"
+	echo "     --skip      skip commit (patch)"
+	echo "     --continue  continue after fix"
+	echo "     --abandon   break the process"
 	exit
 fi
 
 GITROOT=$(get_root_git_dir)
 [ -d "$GITROOT/.git" ] || fatal "Use me in git repo dir only"
 
-GFILE="$GITROOT/.git/gmergelog"
+GFILE="$GITROOT/.git/gpick.commits"
+PFILE="$GITROOT/.git/gpick.patches"
+
+drop_last_line()
+{
+        # TODO: do it better!
+        grep -v "$(tail -n1 "$1")" "$1" >"$1.tmp"
+        rm -f "$1" || fatal
+        mv "$1.tmp" "$1" || fatal
+}
 
 # here we remove last line
 done_commit()
 {
-        # TODO: do it better!
-        grep -v "$1" "$GFILE" >"$GFILE.tmp"
-        rm -f "$GFILE" || fatal
-        mv "$GFILE.tmp" "$GFILE" || fatal
+        drop_last_line "$GFILE"
 }
+
+done_patch()
+{
+        drop_last_line "$PFILE"
+}
+
 
 get_commit()
 {
         tail -n1 "$GFILE" || fatal
 }
 
-# if are in progress
+get_patch()
+{
+        tail -n1 "$PFILE" || fatal
+}
+
+is_patch()
+{
+        rhas "$1" "\.patch$"
+}
+
+# if are in cherry pick progress
 if [ -s "$GFILE" ] ; then
-        if [ "$1" = "--skip" ] ; then
+        case "$1" in
+          "--skip")
             commit=$(get_commit)
             docmd git reset
             echo "Skipping commit $commit"
-            done_commit $commit
-        else
-            [ -n "$1" ] && fatal "We are in cherry pick progress on $(get_commit) commit. Do not use args or check $GFILE file."
-        fi
+            done_commit
+            ;;
+          "--abandon")
+            docmd rm -f "$GFILE"
+            ;;
+          "--continue"|"")
+            ;;
+          *)
+            fatal "We are in cherry pick progress on $(get_commit) commit. Do not use args or check $GFILE file."
+        esac
+# if are in patch progress
+elif [ -s "$PFILE" ] ; then
+        case "$1" in
+          "--skip")
+            patch=$(get_patch)
+            docmd git am --skip
+            echo "Skipping patch $patch"
+            done_patch
+            ;;
+          "--abandon")
+            docmd git am --abort
+            docmd rm -f "$PFILE"
+            ;;
+          "--continue"|"")
+            docmd git am --continue
+            ;;
+          *)
+            fatal "We are in git am progress on $(get_patch) patch. Do not use args or check $PFILE file."
+        esac
 else
         # if first run
-        [ -s "$1" ] || fatal "Run me with git log file (use $ git log)"
+        [ -s "$1" ] || fatal "Run me with git log file (use $ git log) or with patch file(s) (use $ git format-patch COMMIT)"
 
-        grep "^commit " "$1" | sed -e "s|commit \([0-0a-f]*\)|\1|g" >$GFILE || fatal "Can't get commits from $GFILE"
-        [ -s "$GFILE" ] || fatal "There is no git log entries in $1 file"
+        if is_patch "$1" ; then
+                for i in "$@" ; do
+                        echo "$i"
+                done >$PFILE
+        else
+                grep "^commit " "$1" | sed -e "s|commit \([0-0a-f]*\)|\1|g" >$GFILE || fatal "Can't get commits from $GFILE"
+                [ -s "$GFILE" ] || fatal "There is no git log entries in $1 file"
+        fi
 fi
 
 
 
 # has filled file here
+
+# until PFILE is empty
+while [ -s "$PFILE" ] ; do
+        patch=$(get_patch)
+
+        echo
+        echo "Apply patch $patch"
+        docmd git am $patch && done_patch && continue
+
+        echo
+        echo "Git am for patch $patch is failed. Use --skip or fix conflicts in some way and run $0 without args again."
+        exit 1
+done
 
 # until GFILE is empty
 while [ -s "$GFILE" ] ; do
@@ -80,11 +149,11 @@ while [ -s "$GFILE" ] ; do
 
         echo
         echo "Cherry picking $(git show --oneline $commit | head -n1)"
-        docmd git cherry-pick $commit && done_commit $commit && continue
+        docmd git cherry-pick $commit && done_commit && continue
 
         # cherry pick is failed
         echo
-        echo "Cherry pick for commit $commit failed. Use --skip or fix conflicts in some way and run $0 with out args again."
+        echo "Cherry pick for commit $commit is failed. Use --skip or fix conflicts in some way and run $0 without args again."
         exit 1
 done
 echo "Done."
