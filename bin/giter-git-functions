@@ -170,10 +170,16 @@ set_work_hosts()
 force_work_hosts()
 {
 	local RES=0
-	GITHOST="$1"
-	# if the arg is empty, try common way
-	[ -n "$GITHOST" ] || set_git_host "$1"
-	RES=$?
+	case "$1" in
+		# if the arg is empty or an option, try common way
+		-*|--*|"")
+			set_git_host ""
+			RES=$?
+			;;
+		*)
+			GITHOST="$1"
+			;;
+	esac
 	set_gear_host
 	return $RES
 }
