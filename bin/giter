@@ -73,6 +73,7 @@ check_command()
         ;;
     esac
 
+    exit
 }
 
 check_command3()
@@ -91,7 +92,7 @@ check_command2()
 
 set_work_hosts $1 && shift
 
-check_command3 "$@" && exit
-check_command2 "$@" && exit
+check_command3 "$@"
+check_command2 "$@"
 
 fatal "Do not know command '$@'"
