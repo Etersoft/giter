@@ -136,6 +136,9 @@ set_git_host()
 		return 1
 	fi
 
+	# use default
+	GITHOST="$GIRARHOST"
+
 	# if no default, set default GITHOST from ~/.ssh/config
 	if [ -z "$GITHOST" ] ; then
 		GITHOST=$(get_girar_host_from_ssh)
@@ -153,10 +156,23 @@ set_gear_host()
 	return 0
 }
 
+# set hosts vars (by the arg if host in git.* style)
 set_work_hosts()
 {
 	local RES
 	set_git_host "$1"
+	RES=$?
+	set_gear_host
+	return $RES
+}
+
+# set hosts vars by non empty arg
+force_work_hosts()
+{
+	local RES=0
+	GITHOST="$1"
+	# if the arg is empty, try common way
+	[ -n "$GITHOST" ] || set_git_host "$1"
 	RES=$?
 	set_gear_host
 	return $RES

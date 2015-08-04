@@ -28,7 +28,6 @@ test -r "$1" && fatal "Do not need any files in params"
 PUSHFORCE=
 PUSHALL=
 TAGSALL=
-NEWGIRAR=
 
 #############################
 Usage="Usage: $name [GIRAR/remote alias] [-f|--force] [-a|--all] [-b|--branches] [-t|--tags] [tag]"
@@ -71,10 +70,10 @@ LISTARGS="$@"
 
 }
 
-NEWGIRAR=
-if set_work_hosts "$1" ; then
-    # We have set host via program arg
-    NEWGIRAR="$1"
+FORCEGIRAR=
+if force_work_hosts "$1" ; then
+    # We have set host via first program arg
+    FORCEGIRAR="$1"
     shift
 fi
 
@@ -112,7 +111,7 @@ tune_girarlist()
 REMOTELIST="$(get_remote_git_list)"
 
 # If run with gear as param
-if [ -n "$NEWGIRAR" ] ; then
+if [ -n "$FORCEGIRAR" ] ; then
 	# if remote list is empty, do ginit
 	[ -n "$REMOTELIST" ] || ginit $GITHOST
 	LISTGITHOST="$GITHOST"
