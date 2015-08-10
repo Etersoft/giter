@@ -76,7 +76,9 @@ get_gear_name()
 {
 	local gitdir=$(get_root_git_dir)
 	[ -n "$gitdir" ] || return
-	basename "$gitdir" | filter_gear_name
+	local gearname=$(basename "$gitdir" | filter_gear_name)
+	[ "$gearname" = "/" ] && gearname=""
+	echo "$gearname"
 }
 
 get_girar_host_from_ssh()
