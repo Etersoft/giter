@@ -94,26 +94,42 @@ push_to_remote()
 	[ -n "$TAGSALL" ] && TEXTTAG="(with all tags)"
 
 	echo
-	echo "** Push $TEXTBRANCH from $PROJECTDIR to $GHOST $TEXTTAG"
+	echover "** Push $TEXTBRANCH from $PROJECTDIR to $GHOST $TEXTTAG"
 
 	docmd git push $PUSHFORCE $GHOST $CURRENTBRANCH || return
+
 	if [ -n "$TAGSALL" ] ; then
 		docmd git push --tags $GHOST $CURRENTBRANCH
-	else
-		if is_last_commit_tag ; then
-			local LASTTAG=$(get_last_tag)
-			if [ -n "$LASTTAG" ] ; then
-				echo "*** Push last tag $LASTTAG"
-				docmd git push $PUSHFORCE $GHOST $LASTTAG
-			fi
+		return
+	fi
+
+	if is_last_commit_tag ; then
+		local LASTTAG=$(get_last_tag)
+		if [ -n "$LASTTAG" ] ; then
+			echo "*** Push last tag $LASTTAG"
+			docmd git push $PUSHFORCE $GHOST $LASTTAG
+			return
 		fi
 	fi
+	
+	return 0
+}
+
+# copied from get_remote_git_list
+get_remote_pub_list()
+{
+        local i
+        for i in $(get_remote_repo_list) ; do
+                if rhas "$i" "^pub\." ; then
+                        echo "$i"
+                fi
+        done
 }
 
 tune_girarlist()
 {
 
-REMOTELIST="$(get_remote_git_list)"
+REMOTELIST="$(get_remote_pub_list) $(get_remote_git_list)"
 
 # If run with gear as param
 if [ -n "$FORCEGIRAR" ] ; then
@@ -126,7 +142,8 @@ else
 	#if get_remote_repo_list | grep -q origin ; then
 	#	GITHOST="origin"
 	#fi
-	LISTGITHOST="$GITHOST $(do_exclude_list "$GITHOST" "$REMOTELIST")"
+	#LISTGITHOST="$GITHOST $(do_exclude_list "$GITHOST" "$REMOTELIST")"
+	LISTGITHOST="$REMOTELIST"
 fi
 
 if [ -n "$PUSHTOALL" ] ; then
@@ -158,5 +175,5 @@ else
 fi
 
 for i in $LISTGITHOST ; do
-	push_to_remote $i
+	push_to_remote $i || fatal "Failed to push. Fix it and run the command again."
 done
