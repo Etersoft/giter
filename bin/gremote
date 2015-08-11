@@ -39,14 +39,17 @@ set_work_hosts $1 && shift
 if [ "$1" = "-u" ] ; then
 	shift
 	RU="$1"
-	[ -n "$RU" ] || fatal "User missed. Please, run as gremote -u USER"
-	SPEC=$(get_gear_spec)
-	build_rpms_name "$SPEC"
-	# copied from rpmbs
-	# FIXME: hack: get project name from package name
-	PROJECTNAME=$(echo $BASENAME | filter_gear_name)
-	[ -n "$PROJECTNAME" ] || fatal "Can't detect current project name"
-	docmd git remote add $RU $GITHOST:/people/$RU/packages/$PROJECTNAME.git
+	#[ -n "$RU" ] || fatal "User missed. Please, run as gremote -u USER"
+	#SPEC=$(get_gear_spec)
+	#build_rpms_name "$SPEC"
+	# TODO: rewrite
+	PKGNAME=$(get_repo_name)
+	[ -n "$PKGNAME" ] || fatal "Can't detect current project name"
+	if [ -n "$RU" ] ; then
+		docmd git remote add $RU $GITHOST:/people/$RU/packages/$PKGNAME.git
+	else
+		docmd git remote add $USER $GITHOST:packages/$PKGNAME.git
+	fi
 	exit
 fi
 
