@@ -26,7 +26,8 @@ PROGDIR=$(dirname $0)
 test -r "$1" && fatal "Do not need any files in params"
 
 PUSHFORCE=
-PUSHALL=
+PUSHALLBRANCHES=
+PUSHTOALL=
 TAGSALL=
 
 #############################
@@ -52,12 +53,12 @@ mygetopts()
 {
 
 
-while getopts :hfat opt; do
+while getopts :hfabt opt; do
     case $opt in
     h) phelp; exit 0;;
     f) PUSHFORCE="--force" ;;
     a) PUSHTOALL="--toall" ;;
-    b) PUSHALLBRANCHES="--allbranches" ;;
+    b) PUSHALLBRANCHES="--all" ;;
     t) TAGSALL="--tags" ;;
     +?) echo "$name: options should not be preceded by a '+'." 1>&2; exit 2;;
     ?) OPTIND=$((OPTIND-1)); break;
@@ -81,7 +82,7 @@ if force_work_hosts "$1" ; then
     shift
 fi
 
-mygetopts $@
+mygetopts "$@"
 
 
 push_to_remote()
@@ -95,7 +96,7 @@ push_to_remote()
 	echo
 	echo "** Push $TEXTBRANCH from $PROJECTDIR to $GHOST $TEXTTAG"
 
-	docmd git push $PUSHALL $PUSHFORCE $GHOST $CURRENTBRANCH || return
+	docmd git push $PUSHFORCE $GHOST $CURRENTBRANCH || return
 	if [ -n "$TAGSALL" ] ; then
 		docmd git push --tags $GHOST $CURRENTBRANCH
 	else
@@ -146,9 +147,9 @@ fi
 
 tune_girarlist $LISTARGS
 
-if [ "$PUSHALLBRANCHES" = "--allbranches" ] ; then
+if [ -n "$PUSHALLBRANCHES" ] ; then
 	TEXTBRANCH="all branches"
-	CURRENTBRANCH=
+	CURRENTBRANCH="--all"
 else
 	TEXTBRANCH="branch $CURRENTBRANCH"
 	if git tag | grep -q "^$CURRENTBRANCH\$" ; then
