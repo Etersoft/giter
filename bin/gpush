@@ -129,7 +129,7 @@ get_remote_pub_list()
 tune_girarlist()
 {
 
-REMOTELIST="$(get_remote_pub_list) $(get_remote_git_list)"
+REMOTELIST="$(estrlist union $(get_remote_pub_list) $(get_remote_git_list))"
 
 # If run with gear as param
 if [ -n "$FORCEGIRAR" ] ; then
