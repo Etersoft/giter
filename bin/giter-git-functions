@@ -221,3 +221,7 @@ is_last_commit_tag()
         [ "$(git rev-parse HEAD)" = "$(git rev-parse $TAG^0)" ]
 }
 
+set_merge_ff()
+{
+	[ -n "$(git config --local merge.ff)" ] || docmd git config --local merge.ff only
+}

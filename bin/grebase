@@ -39,9 +39,11 @@ if [ -z "$NN" ] ; then
 	echo "Input line number (next after needed) or Enter to exit:"
 	read NN other
 	# try convert to numeric
-	NN=$(($NN + 0))
+	NN=$(($NN))
 	[ "$NN" = "0" ] && fatal "Incorrect number"
 fi
+
+set_merge_ff
 
 # TODO: select from commit list
 CID="HEAD~$NN"

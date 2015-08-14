@@ -98,6 +98,7 @@ pull_from_unique_branch()
 
 if [ -n "$ALLBRANCHES" ] ; then
 	pull_all_branches
+	set_merge_ff
 	exit
 fi
 
@@ -121,6 +122,7 @@ if [ -n "$CHECKRESULT" ] ; then
 fi
 
 docmd git fetch $REPO || exit
+set_merge_ff
 
 	# FIXME: Не факт, что удалённо бранч называется именно $REMOTEBRANCH
 if ! LC_ALL=C store_output docmd git pull $REBASE $REPO $REMOTEBRANCH ; then
