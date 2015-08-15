@@ -28,29 +28,36 @@ PROGDIR=$(dirname $0)
 
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 	echo "grebase - do interactive rebase for last N commits"
-	echo "Use: grebase [N]"
+	echo "Use: grebase [-f] [N]"
 	echo "   N - number of the commit (will ask if empty)"
+	echo "   -f  force rebase ever for published commits"
 	exit 0
 fi
 
-FORCE=
+EXTEXT=
+NOTREMOTES="$(get_current_branch) --not --remotes"
 if [ "$1" = "-f" ] ; then
-	FORCE=1
+	shift
+	NOTREMOTES=
+else
+	EXTEXT=" (only non published commits)"
 fi
 
 set_merge_ff
 
-NN=$1
+NN="$1"
 if [ -z "$NN" ] ; then
-	echo "Will do commit rebase. Last commit list:"
+	echo "Will do commit rebase. Last commit list$EXTEXT:"
 	tmpfile=$(mktemp) || fatal
-	git log --pretty=format:"%h %s, %cd" | head -n 20 | tee $tmpfile | cat -n
-	echo "Input line number (next after needed) or Enter to exit:"
+	git log $NOTREMOTES --pretty=format:"%h %s, %cd" | head -n 20 | tee $tmpfile | cat -n
+	echo
+	echo "Input line number or Ctrl-C to exit:"
 	read NN other
-	# try convert to numeric
-	NN=$(($NN))
-	[ "$NN" = "0" ] && fatal "Incorrect number"
 fi
+
+# force numeric
+NN=$(($NN))
+[ "$NN" = "0" ] && fatal "Incorrect number format"
 
 commit=$(cat $tmpfile | sed -n "${NN}p" | sed -e "s| .*||g")
 [ -n "$commit" ] || fatal "Logic error can't find commit $NN in $(cat $tmpfile)"
