@@ -223,5 +223,8 @@ is_last_commit_tag()
 
 set_merge_ff()
 {
+	# only if work with repo from /projects (shared work)
+	rhas "$(get_remote_repo_list -v)" ":/projects" || return
+	# if have not merge.ff setting, set only
 	[ -n "$(git config --local merge.ff)" ] || docmd git config --local merge.ff only
 }
