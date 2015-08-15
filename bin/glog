@@ -21,14 +21,23 @@ PROGDIR=$(dirname $0)
 [ "$PROGDIR" = "." ] && PROGDIR=$(pwd)
 
 . $PROGDIR/giter-common-functions
+. $PROGDIR/giter-git-functions
 
 
 # Do git rebase -i
 
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 	echo "glog - git log"
-	echo "Use: glog"
+	echo "Use: glog [-u]"
+	echo " -u - show only unpublished commits"
 	exit 0
 fi
 
-docmd git log --pretty=oneline --abbrev-commit --graph --decorate --all
+NOTREMOTES="--all"
+if [ "$1" = "-u" ] ; then
+	shift
+	NOTREMOTES="$(get_current_branch) --not --remotes"
+	#echo "Show only unpublished commits from the branch"
+fi
+
+docmd git log $NOTREMOTES --pretty=oneline --abbrev-commit --graph --decorate
