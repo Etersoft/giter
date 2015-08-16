@@ -47,9 +47,11 @@ set_merge_ff
 
 NN="$1"
 if [ -z "$NN" ] ; then
-	echo "Will do commit rebase. Last commit list$EXTEXT:"
 	tmpfile=$(mktemp) || fatal
-	git log $NOTREMOTES --pretty=format:"%h %s, %cd" | head -n 20 | tee $tmpfile | cat -n
+	git log $NOTREMOTES --pretty=format:"%h %s, %cd" | head -n 20 > $tmpfile
+	[ -s "$tmpfile" ] || fatal "No unpublished commits. You can use -f option if you know what you doing."
+	echo "Will do commit rebase. Last commit list$EXTEXT:"
+	cat -n $tmpfile
 	echo
 	echo "Input line number or Ctrl-C to exit:"
 	read NN other
