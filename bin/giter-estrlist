@@ -197,6 +197,6 @@ if [ "$1" = "-" ] ; then
     "$COMMAND" "$(cat) $@"
 elif [ "$2" = "-" ] ; then
     "$COMMAND" "$1" "$(cat)"
-else
+elif [ "$#" != 0 ] ; then
     "$COMMAND" "$@"
 fi
