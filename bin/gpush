@@ -115,26 +115,17 @@ push_to_remote()
 	return 0
 }
 
-# copied from get_remote_git_list
-get_remote_pub_list()
-{
-        local i
-        for i in $(get_remote_repo_list) ; do
-                if rhas "$i" "^pub\." ; then
-                        echo "$i"
-                fi
-        done
-}
 
 tune_girarlist()
 {
 
-REMOTELIST="$(estrlist union $(get_remote_pub_list) $(get_remote_git_list))"
+REMOTELIST="$(estrlist union $(get_remote_pub_list) $(get_remote_git_list) | estrlist list)"
 
 # If run with gear as param
 if [ -n "$FORCEGIRAR" ] ; then
-	# if remote list is empty, do ginit
-	[ -n "$REMOTELIST" ] || ginit $GITHOST
+	if [ ! -n "$REMOTELIST" ] && is_girar_name "$FORCEGIRAR" ; then
+		docmd ginit $FORCEGIRAR
+	fi
 	LISTGITHOST="$GITHOST"
 else
         # TODO: bad way
@@ -159,8 +150,8 @@ else
 fi
 
 [ -n "$CURRENTBRANCH" ] || fatal "Can't detect current branch"
-
 }
+
 
 tune_girarlist $LISTARGS
 
@@ -173,6 +164,8 @@ else
 		TEXTBRANCH="tag $CURRENTBRANCH"
 	fi
 fi
+
+[ -n "$LISTGITHOST" ] || fatal "No known git aliases (use can use git.* or pub.*). Try $ gremote and $ gpush ALIAS"
 
 set_merge_ff
 

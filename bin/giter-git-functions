@@ -57,7 +57,7 @@ get_remote_repo_name()
         # any git.*** from git remote has girar like path
         local anygirar
         for anygirar in $(get_remote_git_list) ; do
-    	    echo "$anygirar" | egrep "(packages|srpms|gears)/" && break
+             echo "$anygirar" | egrep "(packages|srpms|gears)/" && break
         done
         url=$(git config --get remote.$anygirar.url)
     fi
@@ -92,20 +92,38 @@ get_repo_name()
     #PROJECTNAME=$(echo $BASENAME | filter_gear_name)
 }
 
+# TODO: rewrite with estrlist (does no matter, one or many
 get_remote_git_list()
 {
         local i
         for i in $(get_remote_repo_list) ; do
-                if is_girar_name $i ; then
-                        echo $i
+                if is_girar_name "$i" ; then
+                        echo "$i"
                 fi
         done
 }
 
+# TODO: rewrite with estrlist
+get_remote_pub_list()
+{
+        local i
+        for i in $(get_remote_repo_list) ; do
+                if is_pub_name "$i" ; then
+                        echo "$i"
+                fi
+        done
+}
+
+
 # Check if $1 like git.alt or git.eter, git.something
 is_girar_name()
 {
-	echo "$1" | grep -q "^git\."
+	rhas "$1" "^git\."
+}
+
+is_pub_name()
+{
+	rhas "$1" "^pub\."
 }
 
 is_one_girar_name()
@@ -136,7 +154,7 @@ set_git_host()
 		return 1
 	fi
 
-	# use default
+	# use default from config
 	GITHOST="$GIRARHOST"
 
 	# if no default, set default GITHOST from ~/.ssh/config
@@ -150,7 +168,7 @@ set_git_host()
 
 set_gear_host()
 {
-	assert_var GITHOST
+	#assert_var GITHOST
 	GEARHOST="$GITHOST"
 	[ "$GEARHOST" = "git.alt" ] && GEARHOST="gear.alt"
 	return 0
@@ -173,7 +191,8 @@ force_work_hosts()
 	case "$1" in
 		# if the arg is empty or an option, try common way
 		-*|--*|"")
-			set_git_host ""
+			#set_git_host ""
+			GITHOST=
 			RES=$?
 			;;
 		*)
