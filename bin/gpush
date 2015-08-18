@@ -119,11 +119,11 @@ push_to_remote()
 tune_girarlist()
 {
 
-REMOTELIST="$(estrlist union $(get_remote_pub_list) $(get_remote_git_list) | estrlist list)"
+REMOTELIST="$(estrlist union $(get_remote_pub_list) $(get_remote_git_list) | estrlist list -)"
 
 # If run with gear as param
 if [ -n "$FORCEGIRAR" ] ; then
-	if [ ! -n "$REMOTELIST" ] && is_girar_name "$FORCEGIRAR" ; then
+	if [ -z "$REMOTELIST" ] && is_girar_name "$FORCEGIRAR" ; then
 		docmd ginit $FORCEGIRAR
 	fi
 	LISTGITHOST="$GITHOST"
