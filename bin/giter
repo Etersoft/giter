@@ -1,7 +1,7 @@
 #!/bin/sh
 #
-# Copyright (C) 2008-2014  Etersoft
-# Copyright (C) 2008-2014  Vitaly Lipatov <lav@etersoft.ru>
+# Copyright (C) 2008-2015  Etersoft
+# Copyright (C) 2008-2015  Vitaly Lipatov <lav@etersoft.ru>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -30,7 +30,9 @@ if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 	echo "     giter list branches"
 	echo "     giter print repo"
 	echo "     giter print remote"
-	echo "     gitar print girar repo NAME"
+	echo "     gitar print girar pubrepo REPONAME"
+	echo "     gitar print girar userrepo USER REPONAME"
+	echo "     gitar print girar user"
 	exit 0
 fi
 
@@ -62,8 +64,14 @@ check_command()
         "print gearhost"|"print gear host")
             echo "$GEARHOST"
             ;;
-        "print girar repo")
+        "print girar repo"|"print girar pubrepo")
             get_girar_repo "$1"
+            ;;
+        "print girar userrepo")
+            get_user_repo "$1" "$2"
+            ;;
+        "print girar user")
+            get_girar_user "$1"
             ;;
         "check girar access")
             has_ssh_girar_access

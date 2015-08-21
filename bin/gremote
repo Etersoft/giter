@@ -45,11 +45,8 @@ if [ "$1" = "-u" ] ; then
 	# TODO: rewrite
 	PKGNAME=$(get_repo_name)
 	[ -n "$PKGNAME" ] || fatal "Can't detect current project name"
-	if [ -n "$RU" ] ; then
-		docmd git remote add $RU $GITHOST:/people/$RU/packages/$PKGNAME.git
-	else
-		docmd git remote add $USER $GITHOST:packages/$PKGNAME.git
-	fi
+	[ -n "$RU" ] || RU=$(get_girar_user)
+	docmd git remote add $RU $GITHOST:$(get_user_repo "$RU" $PKGNAME)
 	exit
 fi
 

@@ -57,3 +57,25 @@ get_girar_repo()
 	echo "$RREPO"
 }
 
+get_girar_user()
+{
+	local GIT_USER=$(show_alias $GITHOST | grep -i "User " | sed -e "s|.*User *\([a-zA-Z_]*\).*|\1|g" | sed -e "s|^git_||g")
+	if [ -z "$GIT_USER" ] ; then
+		GIT_USER=$USER
+		warning "Can't get user for ssh alias $GITHOST, use current user $GIT_USER"
+	fi
+	echo "$GIT_USER"
+}
+
+# get user gear repo for package (like /people/USER/package)
+get_user_repo()
+{
+	assert_var GITHOST
+	local GITUSER="$1"
+	local PKGNAME="$2"
+
+	local RPNAME="/people/$GITUSER/packages/$PKGNAME.git"
+	# hack if user is missed
+	[ -n "$RPNAME" ] || RPNAME="packages/$PKGNAME.git"
+	echo "$RPNAME"
+}

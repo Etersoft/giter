@@ -22,6 +22,7 @@ PROGDIR=$(dirname $0)
 
 . $PROGDIR/giter-common-functions
 . $PROGDIR/giter-git-functions
+. $PROGDIR/giter-girar-functions
 
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 	echo "ginit - initialize remote repo for the project from the current directory"
@@ -47,15 +48,9 @@ fi
 # FIXME: если не нашли, стоит взять название каталога за основу (если мы в git-репозитории)
 [ -n "$RPNAME" ] || fatal "Can't detect project name. Run inside git repo, please."
 
-GIT_USER=$(show_alias $GITHOST | grep -i "User " | sed -e "s|.*User *\([a-zA-Z_]*\).*|\1|g" | sed -e "s|^git_||g")
-if [ -z "$GIT_USER" ] ; then
-	GIT_USER=$USER
-	warning "Can't get user for ssh alias $GITHOST, use current user $GIT_USER"
-fi
-
-# ALT Linux girar only
+# ALT Linux girar only. If there is no direct path
 if ! rhas "$RPNAME" "/" ; then
-	RPNAME="/people/$GIT_USER/packages/$RPNAME"
+	RPNAME=$(get_user_repo "$(get_girar_user)" $RPNAME)
 fi
 
 # ALT Linux girar only
