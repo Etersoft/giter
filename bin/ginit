@@ -55,7 +55,15 @@ fi
 
 # ALT Linux girar only
 echo "Create remote $RPNAME repo in $GITHOST:"
-docmd ssh $GITHOST git-init-db "$RPNAME"
+if [ "$GITHOST" = "git.eter" ] ; then
+	# TODO: hack until it will fixed at Etersoft's girar
+	# $ ssh git.eter git-init-db /people/lav/packages/eepm.git
+	# girar-init-db: /people/lav/packages/eepm.git: invalid directory name
+	# at alt-init: gitery-init-db: /people/lav/packages/eepm.git: git repository already exists
+	docmd ssh $GITHOST git-init-db "$(echo "$RPNAME" | sed -e "s|.*/packages|packages|g")"
+else
+	docmd ssh $GITHOST git-init-db "$RPNAME"
+fi
 
 if [ -n "$GNAME" ] ; then
 	echo
