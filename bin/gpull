@@ -92,6 +92,11 @@ pull_from_unique_branch()
 	# TODO: use function for get remote branch name
 	REMOTEBRANCH=$(git branch -a | grep "^  remotes/$REPO/" | sed -e "s|.*remotes/$REPO/||")
 	if [ "$(estrlist count $REMOTEBRANCH)" -gt 1 ] ; then
+		# use sisyphus name for gear
+		# TODO: use function for get url of remote repo
+		if rhas "$REMOTEBRANCH" "sisyphus" && get_remote_repo_list -v | grep "^$REPO[[:space:]]" | egrep -q "/(gears|srpms)/" ; then
+			REMOTEBRANCH="sisyphus"
+		fi
 		fatal "Can't detect remote branch in $(echo $REMOTEBRANCH). Run with one from these."
 	fi
 	docmd git pull $REBASE $REPO $REMOTEBRANCH
@@ -107,11 +112,6 @@ REMOTEBRANCH="$1"
 
 # Only if set REPO
 if [ -n "$REPO" ] ; then
-	# use sisyphus name for gear
-	# TODO: use function for get url of remote repo
-	if [ -z "$REMOTEBRANCH" ] && get_remote_repo_list -v | grep "^$REPO[[:space:]]" | egrep -q "/(gears|srpms)/" ; then
-		REMOTEBRANCH="sisyphus"
-	fi
 	# use current branch name as default
 	[ -n "$REMOTEBRANCH" ] || REMOTEBRANCH=$(get_current_branch)
 fi
