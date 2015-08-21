@@ -54,20 +54,20 @@ check_command()
             ;;
         # OBSOLETED: for compatibility
         "print girarhost"|"print girar host")
-    	    echo "$GITHOST"
-    	    ;;
+            echo "$GITHOST"
+            ;;
         "print githost"|"print git host")
-    	    echo "$GITHOST"
-    	    ;;
+            echo "$GITHOST"
+            ;;
         "print gearhost"|"print gear host")
-    	    echo "$GEARHOST"
-    	    ;;
+            echo "$GEARHOST"
+            ;;
         "print girar repo")
             get_girar_repo "$1"
             ;;
         "check girar access")
-    	    has_ssh_girar_access
-    	    ;;
+            has_ssh_girar_access
+            ;;
         *)
             return 1
         ;;

@@ -76,24 +76,24 @@ fi
 
 pull_all_branches()
 {
-        local CURRENTBRANCH=$(get_current_branch)
-        # pull all branches
-        for i in $(get_branch_list) ; do
-            docmd git checkout $i || fatal "can't checkout $i"
-            docmd git pull --tags $REPO $i
-        done
-        docmd git checkout $CURRENTBRANCH
+	local CURRENTBRANCH=$(get_current_branch)
+	# pull all branches
+	for i in $(get_branch_list) ; do
+		docmd git checkout $i || fatal "can't checkout $i"
+		docmd git pull --tags $REPO $i
+	done
+	docmd git checkout $CURRENTBRANCH
 }
 
 # Если не получилось получить обновление по такому же названию бранча, как локальный, то получаем по удалённому
 pull_from_unique_branch()
 {
-        [ -n "$REPO" ] || return
-        REMOTEBRANCH=$(git branch -a | grep "^  remotes/$REPO/" | sed -e "s|.*remotes/$REPO/||")
-        if [ "$(estrlist count $REMOTEBRANCH)" -gt 1 ] ; then
-            fatal "Can't detect remote branch in $(echo $REMOTEBRANCH). Run with one from these."
-        fi
-        docmd git pull $REBASE $REPO $REMOTEBRANCH
+	[ -n "$REPO" ] || return
+	REMOTEBRANCH=$(git branch -a | grep "^  remotes/$REPO/" | sed -e "s|.*remotes/$REPO/||")
+	if [ "$(estrlist count $REMOTEBRANCH)" -gt 1 ] ; then
+		fatal "Can't detect remote branch in $(echo $REMOTEBRANCH). Run with one from these."
+	fi
+	docmd git pull $REBASE $REPO $REMOTEBRANCH
 }
 
 if [ -n "$ALLBRANCHES" ] ; then
@@ -114,8 +114,8 @@ if [ -n "$CHECKRESULT" ] ; then
 	# Quiet in check mode
 	#showcmd git pull --rebase $REPO $REMOTEBRANCH
 	UPTODATEres=`git pull --rebase $REPO $REMOTEBRANCH 2>&1`
-        # REWRITE ME: assure we get tags
-        git pull --tags $REPO $REMOTEBRANCH
+	# REWRITE ME: assure we get tags
+	git pull --tags $REPO $REMOTEBRANCH
 	echocon "$UPTODATEres"
 	echo $UPTODATEres | tail -n1 | grep -q "is up to date"
 	exit
