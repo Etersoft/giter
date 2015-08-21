@@ -247,3 +247,9 @@ set_merge_ff()
 	# if have not merge.ff setting, set only
 	[ -n "$(git config --local merge.ff)" ] || docmd git config --local merge.ff only
 }
+
+# copied from rooter
+show_alias()
+{	local ALIAS="$1"
+	grep -A20 -- "Host[[:space:]]*$ALIAS\$" ~/.ssh/config | grep -B20 -m1 -- "^$"
+}

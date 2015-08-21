@@ -27,7 +27,7 @@ if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 	echo "ginit - initialize remote repo for the project from the current directory"
 	echo "Use: ginit [GIRAR] [project]"
 	echo "     ginit git.alt - create repo in the git.alt girar server"
-	echo "     ginit rempro  - create repo rempro in the git.eter"
+	echo "     ginit rempro  - create repo rempro in [GIRAR]"
 	echo "     ginit git.eter /projects/rempro  - create repo rempro in the project dir in the git.eter girar server"
 	exit 0
 fi
@@ -44,15 +44,21 @@ if [ -z "$RPNAME" ] ; then
 	RPNAME="$GNAME"
 fi
 
-# FIXME: если не нашли, стоит взять название каталога за основу
+# FIXME: если не нашли, стоит взять название каталога за основу (если мы в git-репозитории)
 [ -n "$RPNAME" ] || fatal "Can't detect project name. Run inside git repo, please."
 
-# ALT Linux gear only
-if echo "$RPNAME" | grep -q -v "/" ; then
-	RPNAME="packages/$RPNAME"
+GIT_USER=$(show_alias $GITHOST | grep -i "User " | sed -e "s|.*User *\([a-zA-Z_]*\).*|\1|g" | sed -e "s|^git_||g")
+if [ -z "$GIT_USER" ] ; then
+	GIT_USER=$USER
+	warning "Can't get user for ssh alias $GITHOST, use current user $GIT_USER"
 fi
 
-# ALT Linux only
+# ALT Linux girar only
+if ! rhas "$RPNAME" "/" ; then
+	RPNAME="/people/$GIT_USER/packages/$RPNAME"
+fi
+
+# ALT Linux girar only
 echo "Create remote $RPNAME repo in $GITHOST:"
 docmd ssh $GITHOST git-init-db "$RPNAME"
 
