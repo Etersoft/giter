@@ -30,9 +30,9 @@ if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 	echo "     giter list branches"
 	echo "     giter print repo"
 	echo "     giter print remote"
-	echo "     gitar print girar pubrepo REPONAME"
-	echo "     gitar print girar userrepo USER REPONAME"
-	echo "     gitar print girar user"
+	echo "     giter print girar pubrepo REPONAME"
+	echo "     giter print girar userrepo USER REPONAME"
+	echo "     giter print girar user"
 	exit 0
 fi
 
