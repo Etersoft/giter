@@ -1,0 +1,77 @@
+#!/bin/sh
+#
+# Copyright (C) 2015  Etersoft
+# Copyright (C) 2015  Vitaly Lipatov <lav@etersoft.ru>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+
+PROGDIR=$(dirname $0)
+[ "$PROGDIR" = "." ] && PROGDIR=$(pwd)
+
+. $PROGDIR/giter-common-functions
+. $PROGDIR/giter-git-functions
+
+if [ "$1" = "-h" ] || [ "$1" = "--help" ] ; then
+	echo "gclone - do git clone"
+	echo
+	echo "Usage: gclone [options] <repo url> [dir name]"
+	echo
+	echo "gclone just a wrapper around git clone"
+	echo
+	echo "gclone options:"
+	echo "    -p   - force clone via public url"
+	echo
+	docmd git clone
+	exit 0
+fi
+
+if [ "$1" = "-p" ] ; then
+	shift
+	PUBLICACCESS=1
+fi
+
+URL="$1"
+shift
+
+# run original git clone for print error info
+if [ -z "$URL" ] ; then
+	docmd git clone
+	exit
+fi
+
+git_clone()
+{
+	local RREPO="$1"
+	shift
+
+	GITHOST=$(echo "$RREPO" | sed -e "s|:/.*||g")
+	RREPO=$(echo "$RREPO" | sed -e "s|.*:/||g")
+
+	# Test if ssh access is available
+	if [ -z "$PUBLICACCESS" ] && docmd giter $GITHOST check girar access ; then
+		docmd git clone $GIRARHOST:/$RREPO "$@"
+	else
+		local GIRARURL=$(get_git_url $GITHOST)
+		[ -n "$GIRARURL" ] || fatal "Can't get public URL for $GIRHOST"
+		docmd git clone $GIRARURL/$RREPO.git "$@"
+	fi
+}
+
+if rhas "$URL" "://" || ! rhas "$URL" "^git\..*?:/" ; then
+	# direct run for public URL or unknown alias
+	docmd git clone "$URL" "$@"
+else
+	git_clone "$URL" "$@"
+fi
