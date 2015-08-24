@@ -45,8 +45,14 @@ if [ "$1" = "-u" ] ; then
 	# TODO: rewrite
 	PKGNAME=$(get_repo_name)
 	[ -n "$PKGNAME" ] || fatal "Can't detect current project name"
+
 	[ -n "$RU" ] || RU=$(get_girar_user)
-	docmd git remote add $RU $GITHOST:$(get_user_repo "$RU" $PKGNAME)
+
+	ALIAS=$RU
+	# for our remote we use name git.alt or git.eter
+	[ "$RU" = $(get_girar_user) ] && ALIAS="$GITHOST"
+
+	docmd git remote add $ALIAS $GITHOST:$(get_user_repo "$RU" $PKGNAME)
 	exit
 fi
 
