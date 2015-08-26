@@ -1,7 +1,7 @@
 #!/bin/sh
 #
-# Copyright (C) 2012-2014  Etersoft
-# Copyright (C) 2012-2014  Vitaly Lipatov <lav@etersoft.ru>
+# Copyright (C) 2012-2015  Etersoft
+# Copyright (C) 2012-2015  Vitaly Lipatov <lav@etersoft.ru>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -31,6 +31,7 @@ if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 	echo "Options:"
 	echo "  -u USER  add path to USER package repo"
 	echo "  -o       add path to the origin repo (/srpms or /gears)"
+	echo "  -p       convert paths to public URL if possible"
 	exit 0
 fi
 
@@ -66,8 +67,37 @@ if [ "$1" = "-o" ] ; then
 	exit
 fi
 
-test -r "$1" && fatal "Do not need any params more"
+if [ "$1" = "-p" ] ; then
+	get_remote_repo_list -v | \
+	while read alias url; do
+		if ! rhas "$url" "://" && rhas "$url" ":" ; then
+			# FIXME: the same in gclone (use function!)
+			sshalias=$(echo "$url" | sed -e "s/:.*//g")
+			path=$(echo "$url" | sed -e "s/$sshalias://g")
+
+			# hack for related paths in git.*
+			if rhas "$path" "^(packages|public)" && is_girar_name $sshalias ; then
+				# FIXME: takes time due epm call in get_girar_user
+				giraruser=$(GITHOST=$sshalias get_girar_user)
+				if [ -n "$giraruser" ] ; then
+					path="/people/$giraruser/$path"
+				fi
+			fi
+			# try print with public Url if we have one
+			if [ -n "$sshalias" ] && rhas "$path" "^/" ; then
+				purl=$(get_git_url "$sshalias")
+				if [ -n "$purl" ] ; then
+					echo -e "$alias\t$purl$path"
+					continue
+				fi
+			fi
+		fi
+		echo -e "$alias\t$url"
+	done
+	exit
+fi
+
+test -r "$1" && fatal "Do not need params anymore"
 
 showcmd git remote -v
-git remote -v | sed -e "s|(fetch)$||" | sed -e "s|(push)$||" | sort -u
-
+get_remote_repo_list -v
