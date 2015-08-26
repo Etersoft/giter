@@ -81,14 +81,14 @@ if [ "$1" = "-p" ] ; then
 				giraruser=$(GITHOST=$sshalias get_girar_user)
 				if [ -n "$giraruser" ] ; then
 					path="/people/$giraruser/$path"
+					url="$sshalias:$path"
 				fi
 			fi
 			# try print with public Url if we have one
 			if [ -n "$sshalias" ] && rhas "$path" "^/" ; then
 				purl=$(get_git_url "$sshalias")
 				if [ -n "$purl" ] ; then
-					echo -e "$alias\t$purl$path"
-					continue
+					url="$purl$path"
 				fi
 			fi
 		fi
