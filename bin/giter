@@ -27,12 +27,13 @@ PROGDIR=$(dirname $0)
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 	echo "giter wrapper around git"
 	echo "Use: giter [GIRAR] command [args]"
-	echo "     giter list branches"
-	echo "     giter print repo"
-	echo "     giter print remote"
-	echo "     giter print girar pubrepo REPONAME"
-	echo "     giter print girar userrepo USER REPONAME"
-	echo "     giter print girar user"
+	echo "Commands:"
+	echo "     list branches"
+	echo "     print repo"
+	echo "     print remote"
+	echo "     print girar pubrepo REPONAME"
+	echo "     print girar userrepo USER REPONAME"
+	echo "     print girar user"
 	exit 0
 fi
 
