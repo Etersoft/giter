@@ -31,6 +31,9 @@ if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 	echo "     list branches"
 	echo "     print repo"
 	echo "     print remote"
+	echo "     print gear host"
+	echo "     print git host"
+	echo "     print git url"
 	echo "     print girar pubrepo REPONAME"
 	echo "     print girar userrepo USER REPONAME"
 	echo "     print girar user"
@@ -64,6 +67,9 @@ check_command()
             ;;
         "print gearhost"|"print gear host")
             echo "$GEARHOST"
+            ;;
+        "print giturl"|"print git url")
+            get_git_url "$GITHOST"
             ;;
         "print girar repo"|"print girar pubrepo")
             get_girar_repo "$1"
