@@ -61,7 +61,7 @@ git_clone()
 
 	# Test if ssh access is available
 	if [ -z "$PUBLICACCESS" ] && docmd giter $GITHOST check girar access ; then
-		docmd git clone $GIRARHOST:/$RREPO "$@"
+		docmd git clone $GITHOST:/$RREPO "$@"
 	else
 		local GIRARURL=$(get_git_url $GITHOST)
 		[ -n "$GIRARURL" ] || fatal "Can't get public URL for $GIRHOST"
