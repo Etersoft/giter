@@ -27,7 +27,8 @@ get_branch_list()
 
 get_remote_repo_list()
 {
-	git remote "$@" 2>/dev/null | sort -u
+	git remote "$@" 2>/dev/null | sed -e "s|(fetch)$||" | sed -e "s|(push)$||" | sort -u
+
 }
 
 is_exist_branch()

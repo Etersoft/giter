@@ -105,7 +105,7 @@ initial_letter()
 # copied from repos
 get_git_url()
 {
-	epm assure /etc/eterbuild/repos/gitalias etersoft-build-utils
+	epm assure /etc/eterbuild/repos/gitalias etersoft-build-utils </dev/null
 	grep "^$1 " /etc/eterbuild/repos/gitalias | cut -f2 -d" "
 }
 
