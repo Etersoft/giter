@@ -75,15 +75,20 @@ LISTARGS="$@"
 
 }
 
+mygetopts "$@"
+
+forcegirar()
+{
 FORCEGIRAR=
 if force_work_hosts "$1" ; then
     # We have set host via first program arg
     FORCEGIRAR="$1"
     shift
 fi
+LISTARGS="$@"
+}
 
-mygetopts "$@"
-
+forcegirar $LISTARGS
 
 push_to_remote()
 {

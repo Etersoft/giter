@@ -192,9 +192,9 @@ force_work_hosts()
 	case "$1" in
 		# if the arg is empty or an option, try common way
 		-*|--*|"")
-			#set_git_host ""
 			GITHOST=
-			RES=$?
+			#set_git_host ""
+			RES=1
 			;;
 		*)
 			GITHOST="$1"
