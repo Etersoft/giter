@@ -27,10 +27,12 @@ PROGDIR=$(dirname $0)
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 	echo "gpick - cherry pick all commits for git log file in reverse order"
 	echo "Use: gpick [options] file.log|file1.patch... file2.patch..."
-	echo "Hit: get git log from with $ git log command"
+	echo "Options:"
 	echo "     --skip      skip commit (patch)"
 	echo "     --continue  continue after fix"
 	echo "     --abandon   break the process"
+	echo
+	echo "Hit: you can get git log with $ git log command"
 	exit
 fi
 
