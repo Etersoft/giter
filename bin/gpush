@@ -33,7 +33,7 @@ TAGSALL=
 #############################
 name=${0##*/}
 Descr="$name - publish to remote git repository"
-Usage="Usage: $name [GIRAR/remote alias] [options] [branch/tag]"
+Usage="Usage: $name [options] [GIRAR/remote alias] [branch/tag]"
 
 phelp()
 {
@@ -49,33 +49,18 @@ phelp()
 	echo " $ gpush git.alt"
 }
 
-mygetopts()
-{
-
-
-while getopts :hfabt opt; do
+LISTARGS=
+for opt in "$@" ; do
     case $opt in
-    h) phelp; exit 0;;
-    f) PUSHFORCE="--force" ;;
-    a) PUSHTOALL="--toall" ;;
-    b) PUSHALLBRANCHES="--all" ;;
-    t) TAGSALL="--tags" ;;
-    +?) echo "$name: options should not be preceded by a '+'." 1>&2; exit 2;;
-    ?) OPTIND=$((OPTIND-1)); break;
+        -h) phelp; exit 0;;
+        -f) PUSHFORCE="--force" ;;
+        -a) PUSHTOALL="--toall" ;;
+        -b) PUSHALLBRANCHES="--all" ;;
+        -t) TAGSALL="--tags" ;;
+        *)
+            LISTARGS="$LISTARGS $opt"
     esac
 done
-
-## remove args that were options
-if [ $# -gt 0 ]; then
-	shift $((OPTIND - 1))
-fi
-
-LISTARGS="$@"
-#LISTARGS=$(drop_args "$*" f a t)
-
-}
-
-mygetopts "$@"
 
 forcegirar()
 {
@@ -104,7 +89,7 @@ push_to_remote()
 	docmd git push $PUSHFORCE $GHOST $CURRENTBRANCH || return
 
 	if [ -n "$TAGSALL" ] ; then
-		docmd git push --tags $GHOST $CURRENTBRANCH
+		docmd git push --tags $PUSHFORCE $GHOST $CURRENTBRANCH
 		return
 	fi
 
@@ -147,12 +132,18 @@ if [ -n "$PUSHTOALL" ] ; then
 fi
 
 # if set it can be tag or branch name
-if [ -n "$1" ] ; then
-	CURRENTBRANCH="$1"
-	shift
-else
-	CURRENTBRANCH=$(get_current_branch)
-fi
+case "$1" in
+        -*)
+            fatal "Unknown option $1"
+        ;;
+        "")
+            CURRENTBRANCH=$(get_current_branch)
+        ;;
+        *)
+            CURRENTBRANCH="$1"
+            shift
+        ;;
+esac
 
 [ -n "$CURRENTBRANCH" ] || fatal "Can't detect current branch"
 }
