@@ -1,5 +1,5 @@
 Name: giter
-Version: 1.6
+Version: 1.7
 Release: alt1
 
 Summary: Etersoft wrapper for git commands
@@ -41,6 +41,10 @@ RECOMMENDED packages: git-core gitum
 %_bindir/*
 
 %changelog
+* Sun Oct 11 2015 Vitaly Lipatov <lav@altlinux.ru> 1.7-alt1
+- gpush: make options unpositional
+- small cleanup comments
+
 * Fri Oct 09 2015 Vitaly Lipatov <lav@altlinux.ru> 1.6-alt1
 - gclone: small fix
 - gpush: fix options handling
