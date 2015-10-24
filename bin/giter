@@ -46,6 +46,9 @@ check_command()
    shift
 
     case "$SW" in
+        ""|" ")
+            echo "Run $0 --help to get help."
+            ;;
         "list branches"|"l b")         # HELPCMD: print list of the branches in the repo
             get_branch_list
             ;;
