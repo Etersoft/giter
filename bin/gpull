@@ -136,6 +136,10 @@ if ! LC_ALL=C store_output docmd git pull $REBASE $REPO $REMOTEBRANCH ; then
 	if grep -q "fatal: Couldn't find remote ref" $RC_STDOUT ; then
 		clean_store_output
 		pull_from_unique_branch || exit
+	elif grep -q "fatal: Not possible to fast-forward, aborting." $RC_STDOUT ; then
+		clean_store_output
+		info "Try with $ gpull -r if you know what it means."
+		exit 1
 	else
 		clean_store_output
 		exit 1
