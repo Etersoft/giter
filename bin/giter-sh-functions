@@ -19,6 +19,8 @@
 
 # copied from eepm project
 
+# TODO: replace with common functions
+
 # copied from /etc/init.d/outformat (ALT Linux)
 isatty()
 {
@@ -27,6 +29,13 @@ isatty()
 	export TERM
 	test -t 1
 }
+
+isatty2()
+{
+	# check stderr
+	test -t 2
+}
+
 
 check_tty()
 {
@@ -169,6 +178,22 @@ warning()
 #		echog "Error in $0: $@" >&2
 	fi
 }
+
+info()
+{
+	[ -n "$quiet" ] && return
+
+	# print message to stderr if stderr forwarded to (a file)
+	if isatty2 ; then
+		isatty || return 0
+		#SETCOLOR_WARNING
+		echo "$@"
+		#SETCOLOR_NORMAL
+	else
+		echo "$@" >&2
+	fi
+}
+
 
 # print options description from HELPCMD/HELPOPT lines in the code
 get_help()
