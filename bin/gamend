@@ -43,4 +43,5 @@ if [ -z "$1" ] ; then
 	AMENDARG="$AMENDARG -a"
 fi
 
+[ -n "$1" ] && docmd git add $@
 docmd git commit --amend $AMENDARG $@
