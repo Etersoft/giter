@@ -32,7 +32,8 @@ if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 fi
 
 #AMENDARG=" --date=\"$(date -R)\" -C HEAD"
-AMENDARG=" --reset-author -C HEAD"
+#AMENDARG=" --reset-author -C HEAD"
+AMENDARG="-C HEAD"
 if [ "$1" = "-e" ] ; then
 	AMENDARG=
 	shift
