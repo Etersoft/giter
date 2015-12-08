@@ -70,11 +70,13 @@ fi
 if [ "$1" = "-p" ] ; then
 	get_remote_repo_list -v | \
 	while read alias url; do
-		if rhas "$url" "git@github.com:" ; then
+		if rhas "$url" "^git@.*:" ; then
+		        # git@gitlab.eterfund.ru:jenkins/test.git
 			# git@github.com:vitlav/libnatspec.git
 			# https://github.com/Etersoft/uniset2.git
-			path=$(echo "$url" | sed -e "s/git@github.com://g")
-			url="https://github.com/$path"
+			domain=$(echo "$url" | sed -e "s/git@\(.*\):.*/\1/g")
+			path=$(echo "$url" | sed -e "s/git@.*://g")
+			url="https://$domain/$path"
 		elif ! rhas "$url" "://" && rhas "$url" ":" ; then
 			# FIXME: the same in gclone (use function!)
 			sshalias=$(echo "$url" | sed -e "s/:.*//g")
