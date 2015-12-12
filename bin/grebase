@@ -58,7 +58,7 @@ if [ -z "$NN" ] ; then
 fi
 
 # force numeric
-NN=$(($NN))
+NN=$(($(echo "$NN" | sed -e "s|[^0-9]*||g")))
 [ "$NN" = "0" ] && fatal "Incorrect number format"
 
 commit=$(cat $tmpfile | sed -n "${NN}p" | sed -e "s| .*||g")
