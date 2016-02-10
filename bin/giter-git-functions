@@ -58,9 +58,9 @@ get_remote_repo_name()
         # any git.*** from git remote has girar like path
         local anygirar
         for anygirar in $(get_remote_git_list) ; do
-             echo "$anygirar" | egrep "(packages|srpms|gears)/" && break
+             rhas "$anygirar" "(packages|srpms|gears)/" || continue
+             url=$(git config --get remote.$anygirar.url)
         done
-        url=$(git config --get remote.$anygirar.url)
     fi
 
     if [ -z "$url" ] ; then
@@ -252,5 +252,5 @@ set_merge_ff()
 # copied from rooter
 show_alias()
 {	local ALIAS="$1"
-	grep -A20 -- "Host[[:space:]]*$ALIAS\$" ~/.ssh/config | grep -B20 -m1 -- "^$"
+	grep -A20 -m1 -- "Host[[:space:]]*$ALIAS\$" ~/.ssh/config | grep -B20 -m1 -- "^[[:space:]]*$"
 }
