@@ -1,7 +1,7 @@
 #!/bin/sh
 #
-# Copyright (C) 2009,2015  Etersoft
-# Copyright (C) 2009-2015  Vitaly Lipatov <lav@etersoft.ru>
+# Copyright (C) 2009,2016  Etersoft
+# Copyright (C) 2009-2016  Vitaly Lipatov <lav@etersoft.ru>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -29,6 +29,7 @@ if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 	echo "Use: gpick [options] file.log|file1.patch... file2.patch..."
 	echo "Options:"
 	echo "     --skip      skip commit (patch)"
+	echo "     --autoskip  skip failed commit (patches) automatically"
 	echo "     --continue  continue after fix"
 	echo "     --abandon   break the process"
 	echo
@@ -86,6 +87,9 @@ if [ -s "$GFILE" ] ; then
             echo "Skipping commit $commit"
             done_commit
             ;;
+          "--autoskip")
+            AUTOSKIP=1
+            ;;
           "--abandon")
             docmd rm -f "$GFILE"
             ;;
@@ -102,6 +106,9 @@ elif [ -s "$PFILE" ] ; then
             docmd git am --skip
             echo "Skipping patch $patch"
             done_patch
+            ;;
+          "--autoskip")
+            AUTOSKIP=1
             ;;
           "--abandon")
             docmd git am --abort
@@ -137,7 +144,11 @@ while [ -s "$PFILE" ] ; do
 
         echo
         echo "Apply patch $patch"
-        docmd git am $patch && done_patch && continue
+        docmd git am $patch $GITAMOPTIONS && done_patch && continue
+
+        if [ -n "$AUTOSKIP" ] ; then
+            git am --skip && continue
+        fi
 
         echo
         echo "Git am for patch $patch is failed. Use --skip or fix conflicts in some way and run $0 without args again."
@@ -153,9 +164,13 @@ while [ -s "$GFILE" ] ; do
         echo "Cherry picking $(git show --oneline $commit | head -n1)"
         docmd git cherry-pick $commit && done_commit && continue
 
+        if [ -n "$AUTOSKIP" ] ; then
+            git cherry-pick abort && continue
+        fi
+
         # cherry pick is failed
         echo
-        echo "Cherry pick for commit $commit is failed. Use --skip or fix conflicts in some way and run $0 without args again."
+        echo "Cherry pick for commit $commit is failed. Fix conflicts in some way and run $0 without args again."
         exit 1
 done
 echo "Done."
