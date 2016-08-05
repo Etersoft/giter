@@ -83,7 +83,7 @@ get_gear_name()
 
 get_girar_host_from_ssh()
 {
-	grep -i "host[\t ]\+" ~/.ssh/config | sed "s|.*host[\t ]*||gi" | grep "^git\." | head -n1
+	grep -i "host[\t ]\+" ~/.ssh/config 2>/dev/null | sed "s|.*host[\t ]*||gi" | grep "^git\." | head -n1
 }
 
 # load user config file
