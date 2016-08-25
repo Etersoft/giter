@@ -1,7 +1,7 @@
 #!/bin/sh
 #
-# Copyright (C) 2012-2015  Etersoft
-# Copyright (C) 2012-2015  Vitaly Lipatov <lav@etersoft.ru>
+# Copyright (C) 2012-2016  Etersoft
+# Copyright (C) 2012-2016  Vitaly Lipatov <lav@etersoft.ru>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -78,9 +78,13 @@ if [ "$1" = "-p" ] ; then
 			path=$(echo "$url" | sed -e "s/git@.*://g")
 			url="https://$domain/$path"
 		elif ! rhas "$url" "://" && rhas "$url" ":" ; then
+			# git.eter:/projects/korinf/giter.git
+			# http://git.etersoft.ru/projects/korinf/giter.git
 			# FIXME: the same in gclone (use function!)
 			sshalias=$(echo "$url" | sed -e "s/:.*//g")
 			path=$(echo "$url" | sed -e "s/$sshalias://g")
+			# add missed .git suffix
+			rhas "$path" "\.git$" || path="$path.git"
 
 			# hack for related paths in git.*
 			if rhas "$path" "^(packages|public)" && is_girar_name $sshalias ; then
