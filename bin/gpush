@@ -1,7 +1,7 @@
 #!/bin/sh
 #
-# Copyright (C) 2008-2015  Etersoft
-# Copyright (C) 2008-2015  Vitaly Lipatov <lav@etersoft.ru>
+# Copyright (C) 2008-2016  Etersoft
+# Copyright (C) 2008-2016  Vitaly Lipatov <lav@etersoft.ru>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -118,13 +118,13 @@ if [ -n "$FORCEGIRAR" ] ; then
 	fi
 	LISTGITHOST="$GITHOST"
 else
-        # TODO: bad way
-	# origin by default if exists and alone
-	#if get_remote_repo_list | grep -q origin ; then
-	#	GITHOST="origin"
-	#fi
-	#LISTGITHOST="$GITHOST $(do_exclude_list "$GITHOST" "$REMOTELIST")"
 	LISTGITHOST="$REMOTELIST"
+	if [ -z "$LISTGITHOST" ] ; then
+		# origin by default if exists and alone
+		if get_remote_repo_list | grep -q origin ; then
+			LISTGITHOST="origin"
+		fi
+	fi
 fi
 
 if [ -n "$PUSHTOALL" ] ; then
@@ -161,7 +161,7 @@ else
 	fi
 fi
 
-[ -n "$LISTGITHOST" ] || fatal "No known git aliases (use can use git.* or pub.*). Try $ gremote and $ gpush ALIAS"
+[ -n "$LISTGITHOST" ] || fatal "There are no known git aliases (you can use git.* or pub.*, or origin if alone). Try $ gremote and $ gpush ALIAS"
 
 set_merge_ff
 
