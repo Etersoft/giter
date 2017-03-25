@@ -1,0 +1,10 @@
+gpull -a — по локальным бранчам. сделать -A — по удалённым бранчам??
+gpush -b — по всем бранчам. переделать на -a ?
+
+как склонировать все ветки, чтобы потом их опубликовать?
+
+https://levblanc.github.io/2016/10/28/checkout-all-branches-and-push-to-new-origin/
+
+git clone all remote branches locally
+https://gist.github.com/jruzafa/4153827
+

@@ -63,6 +63,7 @@ get_girar_user()
 	if [ -z "$GIT_USER" ] ; then
 		GIT_USER=$USER
 		warning "Can't get user for ssh alias $GITHOST, use current user $GIT_USER"
+		# hack for mc colorifer: '
 	fi
 	echo "$GIT_USER"
 }
