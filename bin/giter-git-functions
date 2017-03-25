@@ -25,6 +25,11 @@ get_branch_list()
 	git branch | grep '^ ' | sed 's/^..\(.*\)/\1/'
 }
 
+get_remote_branch_list()
+{
+	git branch -a | grep remotes | grep -v HEAD | grep -v master
+}
+
 get_remote_repo_list()
 {
 	git remote "$@" 2>/dev/null | sed -e "s|(fetch)$||" | sed -e "s|(push)$||" | sort -u
@@ -62,6 +67,8 @@ get_remote_repo_name()
              url=$(git config --get remote.$anygirar.url)
         done
     fi
+
+    # TODO: try get from spec name?
 
     if [ -z "$url" ] ; then
         # repo dir name
