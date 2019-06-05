@@ -26,7 +26,7 @@ PROGDIR=$(dirname $0)
 
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 	echo "gamend - do fast git commit amend (apply all current changes to the last commit)"
-	echo "Use: gamend [-e] [file]"
+	echo "Use: gamend [-e] [file(s)]"
 	echo "     -e - edit commit message"
 	exit
 fi
@@ -44,5 +44,5 @@ if [ -z "$1" ] ; then
 	AMENDARG="$AMENDARG -a"
 fi
 
-[ -n "$1" ] && docmd git add $@
-docmd git commit --amend $AMENDARG $@
+[ -n "$1" ] && docmd git add "$@"
+docmd git commit --amend $AMENDARG "$@"
