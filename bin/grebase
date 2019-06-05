@@ -54,10 +54,11 @@ if [ "$(echo "$1" | wc -c)" -ge 5 ] ; then
 	exit
 fi
 
-
 NN="$1"
+
+tmpfile=$(mktemp) || fatal
+
 if [ -z "$NN" ] ; then
-	tmpfile=$(mktemp) || fatal
 	git log $NOTREMOTES --pretty=format:"%h %s, %cd" | head -n 20 > $tmpfile
 	[ -s "$tmpfile" ] || fatal "No unpublished commits. You can use -f option if you know what you doing."
 	echo "Will do commit rebase. Last commit list$EXTEXT:"
@@ -65,6 +66,8 @@ if [ -z "$NN" ] ; then
 	echo
 	echo "Input line number or Ctrl-C to exit:"
 	read NN other
+else
+	git log --pretty=format:"%h %s, %cd" | head -n 100 > $tmpfile
 fi
 
 # force numeric
