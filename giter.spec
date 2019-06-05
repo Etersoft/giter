@@ -1,6 +1,6 @@
 Name: giter
-Version: 1.14
-Release: alt2
+Version: 1.15
+Release: alt1
 
 Summary: Etersoft wrapper for git commands
 
@@ -40,6 +40,10 @@ RECOMMENDED packages: git-core gitum
 %_bindir/*
 
 %changelog
+* Wed Jun 05 2019 Vitaly Lipatov <lav@altlinux.ru> 1.15-alt1
+- grebase: fix
+- use quotes
+
 * Wed Nov 22 2017 Vitaly Lipatov <lav@altlinux.ru> 1.14-alt2
 - drop find_lang
 
