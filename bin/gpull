@@ -159,10 +159,10 @@ set_merge_ff
 
 	# FIXME: Не факт, что удалённо бранч называется именно $REMOTEBRANCH
 if ! LC_ALL=C store_output docmd git pull $REBASE $REPO $REMOTEBRANCH ; then
-	if grep -q "fatal: Couldn't find remote ref" $RC_STDOUT ; then
+	if grep -qi "fatal: couldn't find remote ref" $RC_STDOUT ; then
 		clean_store_output
 		pull_from_unique_branch || exit
-	elif grep -q "fatal: Not possible to fast-forward, aborting." $RC_STDOUT ; then
+	elif grep -qi "fatal: not possible to fast-forward, aborting." $RC_STDOUT ; then
 		clean_store_output
 		info "Try with $ gpull -r if you know what it means."
 		exit 1
