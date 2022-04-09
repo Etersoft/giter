@@ -74,9 +74,10 @@ if [ "$1" = "-p" ] ; then
 		        # git@gitlab.eterfund.ru:jenkins/test.git
 			# git@github.com:vitlav/libnatspec.git
 			# https://github.com/Etersoft/uniset2.git
-			domain=$(echo "$url" | sed -e "s/git@\(.*\):.*/\1/g")
+			domain=$(echo "$url" | sed -e "s/git@\(.*\):.*/\1/g") #"
 			path=$(echo "$url" | sed -e "s/git@.*://g")
 			url="https://$domain/$path"
+			url=$(echo "$url" | sed -e "s|\.git$||")
 		elif ! rhas "$url" "://" && rhas "$url" ":" ; then
 			# git.eter:/projects/korinf/giter.git
 			# http://git.etersoft.ru/projects/korinf/giter.git
