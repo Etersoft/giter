@@ -129,7 +129,7 @@ else
                         echo "$i"
                 done >$PFILE
         else
-                grep "^commit " "$1" | sed -e "s|^commit ||g" -e "s| .*||" >$GFILE || fatal "Can't get commits from $GFILE"
+                grep "^commit " "$1" | sed -e "s|^commit ||g" -e "s| .*||" >$GFILE || fatal "Can't get commits from $1"
                 [ -s "$GFILE" ] || fatal "There is no git log entries in $1 file"
         fi
 fi

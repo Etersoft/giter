@@ -29,7 +29,7 @@ if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 	echo "Use: giter [GIRAR] command [args]"
 	echo "Commands:"
 	echo "     list branches"
-	echo "     print repo"
+	echo "     print repo | print name"
 	echo "     list remote"
 	echo "     list packages"
 	echo "     print gear host"
