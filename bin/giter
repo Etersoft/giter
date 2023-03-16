@@ -30,7 +30,7 @@ if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 	echo "Commands:"
 	echo "     list branches"
 	echo "     print repo | print name"
-	echo "     list remote"
+	echo "     list remote [-v]"
 	echo "     list packages"
 	echo "     print gear host"
 	echo "     print git host"
@@ -57,7 +57,7 @@ check_command()
             get_repo_name
             ;;
         "list remote")
-            get_remote_git_list
+            get_remote_git_list "$1"
             ;;
         "list packages")
             list_git_package "$1"

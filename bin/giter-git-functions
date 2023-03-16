@@ -53,11 +53,16 @@ get_current_branch()
 	git branch | grep '^\*' | sed 's/^..//' | tr -d "\n"
 }
 
+get_remote_git_url()
+{
+	git config --get "remote.$1.url"
+}
+
 # get name from current remote repository name
 get_remote_repo_name()
 {
     local branch remote url basename
-    url=$(git config --get remote.$GITHOST.url)
+    url="$(get_remote_git_url $GITHOST)"
 
     if [ -z "$url" ] ; then
         # any git.*** from git remote has girar like path
@@ -72,15 +77,15 @@ get_remote_repo_name()
 
     if [ -z "$url" ] ; then
         # repo dir name
-        url=$(get_gear_name)
+        url="$(get_gear_name)"
     fi
 
     if [ -z "$url" ] ; then
         # remote url for the current branch
-        branch=$(get_current_branch)
+        branch="$(get_current_branch)"
         [ -n "$branch" ] || return
-        remote=$(git config --get branch.$branch.remote)
-        url=$(git config --get remote.$remote.url)
+        remote="$(git config --get branch.$branch.remote)"
+        url="$(get_remote_git_url $remote)"
     fi
 
     [ -n "$url" ] || return
@@ -106,6 +111,7 @@ get_remote_git_list()
         local i
         for i in $(get_remote_repo_list) ; do
                 if is_girar_name "$i" ; then
+                        [ "$1" = "-v" ] && echo "$i $(get_remote_git_url "$i")" && continue
                         echo "$i"
                 fi
         done
@@ -117,6 +123,7 @@ get_remote_pub_list()
         local i
         for i in $(get_remote_repo_list) ; do
                 if is_pub_name "$i" ; then
+                        [ "$1" = "-v" ] && echo "$i $(get_remote_git_url "$i")" && continue
                         echo "$i"
                 fi
         done
