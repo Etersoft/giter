@@ -68,8 +68,9 @@ get_remote_repo_name()
         # any git.*** from git remote has girar like path
         local anygirar
         for anygirar in $(get_remote_git_list) ; do
-             rhas "$anygirar" "(packages|srpms|gears)/" || continue
-             url=$(git config --get remote.$anygirar.url)
+             url="$(get_remote_git_url $anygirar)"
+             rhas "$url" "(packages|srpms|gears)/" && break
+             url=''
         done
     fi
 
