@@ -59,7 +59,7 @@ get_girar_repo()
 
 get_girar_user()
 {
-	local GIT_USER=$(show_alias $GITHOST | grep -i "User " | sed -e "s|.*User *\([a-zA-Z_]*\).*|\1|g" | sed -e "s|^git_||g" | head -n1)
+	local GIT_USER=$(show_alias $GITHOST | grep -i "User " | sed -e "s|.*User *\([a-zA-Z_]*\).*|\1|g" | sed -e "s|^git_||g" -e "s|^alt_||g" | head -n1)
 	if [ -z "$GIT_USER" ] ; then
 		GIT_USER=$USER
 		warning "Can't get user for ssh alias $GITHOST, use current user $GIT_USER"
