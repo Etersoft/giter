@@ -89,7 +89,6 @@ if [ "$1" = "-p" ] ; then
 
 			# hack for related paths in git.*
 			if rhas "$path" "^(packages|public)" && is_girar_name $sshalias ; then
-				# FIXME: takes time due epm call in get_girar_user
 				giraruser=$(GITHOST=$sshalias get_girar_user)
 				if [ -n "$giraruser" ] ; then
 					path="/people/$giraruser/$path"
