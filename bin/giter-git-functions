@@ -222,21 +222,6 @@ force_work_hosts()
 	return $RES
 }
 
-_list_git_package()
-{
-	while read path date other; do
-		printf "%60s  " $GITHOST:$path
-		[ -n "$date" ] || { echo "[Date is missed]" ; continue ; }
-		date -d@$date
-	done
-}
-
-# TODO: make world better, please
-list_git_package()
-{
-	ssh $GITHOST find-package $1 | _list_git_package
-}
-
 git_commit_ignore_nothing()
 {
         git commit "$@" && return
