@@ -134,7 +134,8 @@ get_remote_pub_list()
 # Check if $1 like git.alt or git.eter, git.something
 is_girar_name()
 {
-	rhas "$1" "^git\."
+	rhas "$1" "^git\." && return
+	rhas "$1" "^gitery" && return
 }
 
 is_pub_name()
@@ -186,7 +187,9 @@ set_gear_host()
 {
 	#assert_var GITHOST
 	GEARHOST="$GITHOST"
+	# https://www.altlinux.org/Git.alt/Справочник#SSH-доступ
 	[ "$GEARHOST" = "git.alt" ] && GEARHOST="gear.alt"
+	[ "$GEARHOST" = "gitery" ] && GEARHOST="gyle"
 	return 0
 }
 
