@@ -117,6 +117,10 @@ if [ -n "$FORCEGIRAR" ] ; then
 		docmd ginit $FORCEGIRAR
 	fi
 	LISTGITHOST="$GITHOST"
+	# hack to allow gitery -> git.alt compatibility
+	if [ "$GITHOST" = "gitery" ] && ! is_exist_remote_repo "$GITHOST" && is_exist_remote_repo "git.alt" ; then
+		LISTGITHOST="git.alt"
+	fi
 else
 	LISTGITHOST="$REMOTELIST"
 	if [ -z "$LISTGITHOST" ] ; then
