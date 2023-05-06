@@ -50,7 +50,7 @@ fi
 
 # ALT Linux girar only. If there is no direct path
 if ! rhas "$RPNAME" "/" ; then
-	RPNAME=$(get_user_repo "$(get_girar_user)" $RPNAME)
+	RPNAME="$(get_user_repo "$(get_girar_user)" $RPNAME)" #"
 fi
 
 # ALT Linux girar only
