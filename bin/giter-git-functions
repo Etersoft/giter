@@ -255,5 +255,5 @@ set_merge_ff()
 # copied from rooter
 show_alias()
 {	local ALIAS="$1"
-	grep -A20 -m1 -- "Host[[:space:]]*$ALIAS\$" ~/.ssh/config 2>/dev/null | grep -B20 -m1 -- "^[[:space:]]*$"
+	ssh -G "$ALIAS"
 }
